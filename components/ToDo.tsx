@@ -61,40 +61,75 @@ function ToDo() {
     setCompletedItems([...completedItems, completedItem]);
   };
 
-  const removeToList = (id) => {
+  const moveToList = (id) => {
     const completedItem = completedItems.filter((filter) => filter.id === id)[0];
     setArray([...array, completedItem]);
   };
 
-  function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
     const styleAnimation = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateX: drag.value + screenWidth }],
-      };
+      if (prog.value >= 0.5) {
+        return {
+          backgroundColor: 'red',
+          transform: [{ translateX: drag.value + screenWidth }],
+        };
+      } else {
+        return {
+          backgroundColor: '#ef4444',
+          transform: [{ translateX: drag.value + screenWidth }],
+        };
+      }
     });
 
     return (
       <Reanimated.View
-        className="my-0.5 h-20 w-screen justify-center rounded-lg bg-red-500 px-5"
+        className="my-0.5 h-20 w-screen justify-center rounded-lg px-5"
         style={styleAnimation}>
         <MaterialCommunityIcons name="trash-can-outline" size={35} color="white" />
       </Reanimated.View>
     );
-  }
+  };
 
-  const Item = ({ title }) => (
+  const Item = ({ title, index, arrayType }) => (
     <Swipeable
-      key={title.id}
       renderRightActions={RightAction}
-      onSwipeableOpen={() => deleteItem(title.id)}>
-      <Pressable
-        onPress={() => {
-          moveToCompleted(title.id);
+      onSwipeableOpen={() => {
+        if (arrayType === 'UnCompleted') {
           deleteItem(title.id);
-        }}
-        className="my-0.5 h-20 flex-row items-center gap-x-2 rounded-lg bg-[#212121] px-3">
-        <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={35} color="#E0E0E0" />
-        <Text className="text-2xl text-[#E0E0E0]">{title.text}</Text>
+        } else deleteItemFromCompleted(title.id);
+      }}>
+      <Pressable
+        onLongPress={() => editItem(index)}
+        className="my-0.5 h-20 flex-row items-center gap-x-2 rounded-lg bg-[#212121] px-3"
+        onPress={() => {
+          if (arrayType === 'UnCompleted') {
+            moveToCompleted(title.id);
+            deleteItem(title.id);
+          } else {
+            moveToList(title.id);
+            deleteItemFromCompleted(title.id);
+          }
+        }}>
+        <MaterialCommunityIcons
+          name={
+            arrayType === 'UnCompleted' ? 'checkbox-blank-circle-outline' : 'check-circle-outline'
+          }
+          size={35}
+          color="#E0E0E0"
+        />
+        {title.edit ? (
+          <TextInput
+            className="flex-1 rounded-md bg-gray-700 p-1 text-2xl text-white"
+            value={editInput}
+            onChangeText={(text) => {
+              setEditInput(text);
+            }}
+            onBlur={() => finishEdit(index)}
+            autoFocus
+          />
+        ) : (
+          <Text className="text-2xl text-[#E0E0E0]">{title.text}</Text>
+        )}
       </Pressable>
     </Swipeable>
   );
@@ -102,8 +137,8 @@ function ToDo() {
   return (
     <View className="flex-1 justify-between bg-[#080808]">
       <ScrollView className="">
-        {array.map((item) => (
-          <Item title={item} />
+        {array.map((item, index) => (
+          <Item key={item.id} title={item} index={index} arrayType="UnCompleted" />
         ))}
         <Pressable
           onPress={() => setIsOpen(!isOpen)}
@@ -115,7 +150,10 @@ function ToDo() {
           />
           <Text className="text-2xl text-white">Completed</Text>
         </Pressable>
-        {completedItems.map((item) => isOpen && <Item title={item} />)}
+        {completedItems.map(
+          (item, index) =>
+            isOpen && <Item key={item.id} title={item} index={index} arrayType="Completed" />
+        )}
       </ScrollView>
       <View className="h-14 flex-row items-center justify-between bg-white/10 px-3">
         <TextInput
