@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 
-const FOCUS_TIME_MINUTES = 5 * 60 * 1000;
-const BREAK_TIME_MINUTES = 1 * 60 * 1000;
+import { settingStore } from '~/src/store/Store';
+
 function Timer() {
-  const [timerCount, setTimerCount] = useState(FOCUS_TIME_MINUTES);
+  const settings = settingStore((state) => state);
+  const [timerCount, setTimerCount] = useState(settings.focusTime);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [timerMode, setTimerMode] = useState('Focus');
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -14,10 +15,10 @@ function Timer() {
     if (timerCount === 0) {
       if (timerMode === 'Focus') {
         setTimerMode('Break');
-        setTimerCount(BREAK_TIME_MINUTES);
+        setTimerCount(settings.breakTime);
       } else {
         setTimerMode('Focus');
-        setTimerCount(FOCUS_TIME_MINUTES);
+        setTimerCount(settings.focusTime);
       }
       stopCountDown();
     }

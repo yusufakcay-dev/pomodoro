@@ -11,20 +11,20 @@ interface ToDoList {
 
 function ToDo() {
   const [input, setInput] = useState('');
-  const [array, setArray] = useState([]);
-  const [completedItems, setCompletedItems] = useState([]);
+  const [array, setArray] = useState<ToDoList[]>([]);
+  const [completedItems, setCompletedItems] = useState<ToDoList[]>([]);
   const [editInput, setEditInput] = useState('');
   const [edit, setEdit] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const screenWidth = Dimensions.get('window').width;
 
-  const deleteItem = (id) => {
+  const deleteItem = (id: string) => {
     const newArray = array.filter((filter) => filter.id !== id);
     setArray(newArray);
   };
 
-  const deleteItemFromCompleted = (id) => {
+  const deleteItemFromCompleted = (id: string) => {
     const newArray = completedItems.filter((filter) => filter.id !== id);
     setCompletedItems(newArray);
   };
@@ -40,7 +40,7 @@ function ToDo() {
     setInput('');
   };
 
-  const editItem = (key) => {
+  const editItem = (key: number) => {
     if (edit) return;
     setEdit(true);
     array[key].edit = true;
@@ -48,7 +48,7 @@ function ToDo() {
     setArray([...array]);
   };
 
-  const finishEdit = (key) => {
+  const finishEdit = (key: number) => {
     setEdit(false);
     array[key].text = editInput;
     array[key].edit = false;
@@ -56,12 +56,12 @@ function ToDo() {
     setArray([...array]);
   };
 
-  const moveToCompleted = (id) => {
+  const moveToCompleted = (id: string) => {
     const completedItem = array.filter((filter) => filter.id === id)[0];
     setCompletedItems([...completedItems, completedItem]);
   };
 
-  const moveToList = (id) => {
+  const moveToList = (id: string) => {
     const completedItem = completedItems.filter((filter) => filter.id === id)[0];
     setArray([...array, completedItem]);
   };
@@ -90,7 +90,7 @@ function ToDo() {
     );
   };
 
-  const Item = ({ title, index, arrayType }) => (
+  const Item = ({ title, index, arrayType }: any) => (
     <Swipeable
       renderRightActions={RightAction}
       onSwipeableOpen={() => {
