@@ -1,11 +1,11 @@
 import { Link } from 'expo-router';
 
-import Timer from '~/src/components/Timer';
+import PomodoroTimer from '~/src/components/PomodoroTimer';
 
 export default function Home() {
   return (
     <>
-      <Timer />
+      <PomodoroTimer />
       <Link href="/list">Go to About screen</Link>
       <Link href="/settings">Go to Settings screen</Link>
     </>
