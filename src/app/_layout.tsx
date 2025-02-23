@@ -7,8 +7,8 @@ export default function Layout() {
     <GestureHandlerRootView>
       <Stack screenOptions={{}}>
         <Stack.Screen name="index" options={{ title: 'Home' }} />
-        <Stack.Screen name="list" options={{ title: 'List' }} />
-        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+        {/* <Stack.Screen name="list" options={{ title: 'List' }} />
+        <Stack.Screen name="settings" options={{ title: 'Settings' }} /> */}
       </Stack>
     </GestureHandlerRootView>
   );

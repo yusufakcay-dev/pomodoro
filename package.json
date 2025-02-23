@@ -46,7 +46,8 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.0",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "@react-native-community/cli": "latest"
   },
   "eslintConfig": {
     "extends": "universe/native",

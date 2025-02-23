@@ -3,15 +3,17 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
+import { storage } from '../stores/storage';
 
 function PomodoroTimer() {
-  const { isTicking, tick, startStopTimer, session } = usePomodoroTimerStore();
-
+  const { isTicking, tick, startStopTimer, sessionTimer, resetTimer, sessionType } =
+    usePomodoroTimerStore();
   useEffect(() => {
     let timerId: NodeJS.Timeout;
     if (isTicking) {
       timerId = setInterval(() => {
         tick();
+        console.log(storage.getString('timer-storage233333'));
       }, 1000);
     }
     return () => clearInterval(timerId);
@@ -29,8 +31,15 @@ function PomodoroTimer() {
           startStopTimer();
         }}>
         <Text style={styles.clock} className="font-thin">
-          {formatTime(session)}
+          {formatTime(sessionTimer)}
         </Text>
+      </Pressable>
+      <Pressable onTouchStart={() => resetTimer()}>
+        <Text className=" text-white">reset</Text>
+        <Text className=" text-white">{sessionType}</Text>
+      </Pressable>{' '}
+      <Pressable onTouchStart={() => storage.clearAll()}>
+        <Text className=" text-white">reset storage</Text>
       </Pressable>
     </View>
   );

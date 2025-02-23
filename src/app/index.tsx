@@ -6,8 +6,8 @@ export default function Home() {
   return (
     <>
       <PomodoroTimer />
-      <Link href="/list">Go to About screen</Link>
-      <Link href="/settings">Go to Settings screen</Link>
+      {/* <Link href="/list">Go to About screen</Link> */}
+      {/* <Link href="/settings">Go to Settings screen</Link> */}
     </>
   );
 }
