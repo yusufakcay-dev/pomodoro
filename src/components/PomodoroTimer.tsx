@@ -13,7 +13,6 @@ function PomodoroTimer() {
     if (isTicking) {
       timerId = setInterval(() => {
         tick();
-        console.log(storage.getString('timer-storage233333'));
       }, 1000);
     }
     return () => clearInterval(timerId);

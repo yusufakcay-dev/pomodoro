@@ -1,3 +1,4 @@
+import * as Notifications from 'expo-notifications';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -22,6 +23,11 @@ interface PomodoroTimerStore {
   totalLongBreakTime: number;
   setFocusTime: (newTime: number) => void;
   setBreakTime: (newTime: number) => void;
+  setLongBreak: (newBool: boolean) => void;
+  setLongBreakTime: (newTime: number) => void;
+  setLongBreakEverySession: (newBool: number) => void;
+  setContinueAfterFocus: (newBool: boolean) => void;
+  setContinueAfterBreak: (newBool: boolean) => void;
   startStopTimer: () => void;
   resetTimer: () => void;
   tick: () => void;
@@ -48,6 +54,11 @@ export const usePomodoroTimerStore = create<PomodoroTimerStore>()(
       totalLongBreakTime: 0,
       setFocusTime: (newTime) => set({ focusSession: newTime }),
       setBreakTime: (newTime) => set({ breakSession: newTime }),
+      setLongBreak: (newBool) => set({ longBreak: newBool }),
+      setLongBreakTime: (newTime) => set({ longBreakSession: newTime }),
+      setLongBreakEverySession: (newTime) => set({ longBreakEverySession: newTime }),
+      setContinueAfterFocus: (newBool) => set({ continueAfterFocus: newBool }),
+      setContinueAfterBreak: (newBool) => set({ continueAfterBreak: newBool }),
       startStopTimer: () =>
         set((state) => ({
           isTicking: !state.isTicking,
@@ -104,7 +115,7 @@ const handleSessionCompletion = (state: PomodoroTimerStore) => {
     nextSessionType = 'Focus';
     nextSessionTime = state.focusSession * 60;
   }
-
+  send();
   return {
     sessionTimer: nextSessionTime,
     sessionType: nextSessionType,
@@ -129,4 +140,15 @@ const handleSession = (state: PomodoroTimerStore) => {
       break;
   }
   return { sessionTimer: state.sessionTimer - 10, ...updateTotalTime };
+};
+
+const send = async () => {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Look at that notification',
+      body: "I'm so proud of myself!",
+    },
+    trigger: null,
+  });
+  console.log('here');
 };
