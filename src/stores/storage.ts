@@ -15,3 +15,6 @@ export const zustandStorage: StateStorage = {
     return storage.delete(name);
   },
 };
+
+// const foo = [{ list: { name: '31', age: 22 }, list2: { name: '31', age: 22 } }];
+// const foo = [{ list: [{ name: '31', age: 22 }], list2: { name: '31', age: 22 } }];

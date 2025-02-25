@@ -1,8 +1,15 @@
 import { Stack } from 'expo-router';
 import '~/global.css';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+
+// This is the default configuration
 
 export default function Layout() {
+  configureReanimatedLogger({
+    level: ReanimatedLogLevel.warn,
+    strict: false, // Reanimated runs in strict mode by default
+  });
   return (
     <GestureHandlerRootView>
       <Stack screenOptions={{}}>
