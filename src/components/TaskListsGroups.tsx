@@ -7,7 +7,7 @@ import CreateModal from './CreateModal';
 function TaskListsGroups() {
   const [modalVisible, setModalVisible] = useState(false);
   const [creating, setCreating] = useState<'list' | 'group'>('list');
-
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { addList, taskListsGroups } = useTasksStore();
 
   return (
@@ -29,14 +29,26 @@ function TaskListsGroups() {
                   <Text className="text-2xl text-white">{item.name}</Text>
                 </View>
                 <View className="flex-row">
-                  <Pressable className="">
-                    <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
-                    <View className="absolute mt-10 bg-white">
-                      <Pressable>
-                        <Text>Change name</Text>
-                      </Pressable>
-                    </View>
-                  </Pressable>
+                  <View className="relative">
+                    {' '}
+                    {/* This ensures dropdown is positioned relative to this container */}
+                    <Pressable
+                      onPress={() =>
+                        setOpenDropdown(openDropdown === item.name ? null : item.name)
+                      }>
+                      <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
+                    </Pressable>
+                    {openDropdown === item.name && (
+                      <View className="absolute right-0 top-10 z-50 min-w-[150px] max-w-screen-sm rounded-lg bg-white p-2 shadow-lg">
+                        <Pressable onPress={() => console.log('Change Name')}>
+                          <Text className="break-words py-2 text-2xl text-black">Change Name</Text>
+                        </Pressable>
+                        <Pressable onPress={() => console.log('Delete')}>
+                          <Text className="break-words py-2 text-2xl text-black">Delete</Text>
+                        </Pressable>
+                      </View>
+                    )}
+                  </View>
                   <Pressable className="">
                     <MaterialCommunityIcons name="chevron-down" size={35} color="white" />
                   </Pressable>

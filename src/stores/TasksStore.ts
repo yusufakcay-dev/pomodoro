@@ -89,7 +89,7 @@ export const useTasksStore = create<TasksStoreType>()(
     }),
 
     {
-      name: 'tasks-storage', // Key for MMKV
+      name: 'tasks-storage2', // Key for MMKV
       storage: createJSONStorage(() => zustandStorage),
     }
   )
