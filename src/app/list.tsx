@@ -1,7 +1,7 @@
-import ToDo from '~/src/components/ToDo';
+import TaskListsGroups from '../components/TaskListsGroups';
 
 function list() {
-  return <ToDo />;
+  return <TaskListsGroups />;
 }
 
 export default list;
