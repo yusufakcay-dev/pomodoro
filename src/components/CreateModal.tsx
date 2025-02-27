@@ -49,7 +49,37 @@ function CreateModal({ modalVisible, setModalVisible, name }: Props) {
                         id: new Date().getTime().toString(),
                         name: input,
                         type: 'group',
-                        groups: [],
+                        groups: [
+                          {
+                            id: new Date().getTime().toString(),
+                            name: 'l1',
+                            type: 'list',
+                            tasks: [
+                              {
+                                id: new Date().getTime().toString(),
+                                text: 'state.input',
+                                editing: false,
+                              },
+                            ],
+                          },
+                          {
+                            id: new Date().getTime().toString(),
+                            name: 'l2',
+                            type: 'list',
+                            tasks: [
+                              {
+                                id: new Date().getTime().toString(),
+                                text: 'item1',
+                                editing: false,
+                              },
+                              {
+                                id: new Date().getTime().toString(),
+                                text: 'item2',
+                                editing: false,
+                              },
+                            ],
+                          },
+                        ],
                       })
                 }>
                 <Text className="text-2xl text-white">CREATE {name.toUpperCase()}</Text>
