@@ -8,7 +8,7 @@ export interface TaskItemType {
   text: string;
   editing: boolean;
 }
-interface TaskListsGroupsType {
+export interface TaskListsGroupsType {
   id: string;
   name: string;
   type: 'list' | 'group';
@@ -26,7 +26,7 @@ interface TasksStoreType {
   addList: (list: TaskListsGroupsType) => void;
   moveListToGroup: (listId: string, groupId: string) => void;
   moveListOutOfGroup: (listId: string) => void;
-
+  setTaskListsGroups: (newOrder: TaskListsGroupsType[]) => void;
   // setInput: (input: string) => void;
   // setEditInput: (editInput: string) => void;
   // setCompletedTasksVisibility: (completedTasksVisibility: boolean) => void;
@@ -49,6 +49,7 @@ export const useTasksStore = create<TasksStoreType>()(
       completedTasksVisibility: false,
       editMode: false,
       addList: (list) => set((state) => ({ taskListsGroups: [...state.taskListsGroups, list] })),
+      setTaskListsGroups: (newOrder) => set({ taskListsGroups: newOrder }),
       moveListToGroup: (listId, groupId) => {
         set((state) => {
           let listToMove: TaskListsGroupsType | null = null;
@@ -144,7 +145,7 @@ export const useTasksStore = create<TasksStoreType>()(
     //   })),
 
     {
-      name: 'tasks-storage22', // Key for MMKV
+      name: 'tasks-storage2d231', // Key for MMKV
       storage: createJSONStorage(() => zustandStorage),
     }
   )

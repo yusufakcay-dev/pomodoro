@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { useTasksStore } from '../stores/TasksStore';
+import { CustomModal } from './CustomModal';
 
 interface Props {
   modalVisible: boolean;
@@ -19,8 +20,14 @@ function CreateModal({ modalVisible, setModalVisible, name }: Props) {
       onRequestClose={() => {
         setModalVisible(!modalVisible);
       }}
-      className="">
-      <Pressable onPress={() => setModalVisible(false)} className="flex-1 justify-center">
+      style={{ zIndex: 999 }}>
+      <Pressable
+        onPress={() => {
+          console.log('first');
+          setModalVisible(false);
+        }}
+        className="flex-1 justify-center 
+      ">
         <View className="" onStartShouldSetResponder={() => true}>
           <View className="w-full gap-y-5 self-center bg-white/5 py-5">
             <Text className="ml-16 text-3xl text-white">Create a {name}</Text>
