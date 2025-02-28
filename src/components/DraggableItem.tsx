@@ -7,7 +7,6 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import { TaskListsGroupsType } from '../stores/TasksStore';
 import { Link, RelativePathString } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
@@ -21,27 +20,44 @@ const swap = (array: any, from: number, to: number) => {
   return newArray;
 };
 
-interface Props {
-  item: TaskListsGroupsType;
-  onOrderChange: (newOrder: TaskListsGroupsType[]) => void;
-  order: any;
-}
-
-export const DraggableItem = ({ item, onOrderChange, order, modalVisible }: any) => {
+export const DraggableItem = ({
+  item,
+  onOrderChange,
+  order,
+  itemsMap,
+  expandedGroups,
+  setExpandedGroups,
+}: any) => {
   const id = item.id;
   const isDragging = useSharedValue(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   // Function to get the current index from the shared order.
   const getIndex = () => order.value.indexOf(id);
   // Set offsetY based on the item's current position.
-  const offsetY = useSharedValue(getIndex() * ITEM_HEIGHT);
+  const calculateTargetOffset = () => {
+    'worklet';
+    const currentIndex = order.value.indexOf(id);
+    let extraOffset = 0;
+    // Loop over all items that come before this one
+    for (let i = 0; i < currentIndex; i++) {
+      const precedingId = order.value[i];
+      const precedingItem = itemsMap[precedingId];
+      // If this preceding item is an expanded group with children, add the extra offset.
+      if (precedingItem && precedingItem.groups && expandedGroups[precedingId]) {
+        extraOffset += precedingItem.groups.length * ITEM_HEIGHT;
+      }
+    }
+    return currentIndex * ITEM_HEIGHT + extraOffset;
+  };
 
+  const offsetY = useSharedValue(calculateTargetOffset());
   const toggleGroup = (groupId: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [groupId]: !prev[groupId], // Toggle group expansion
-    }));
+    setExpandedGroups((prev) => {
+      // Check if the groupId exists and toggle its state
+      const newExpandedGroups = { ...prev };
+      newExpandedGroups[groupId] = !newExpandedGroups[groupId];
+      return newExpandedGroups;
+    });
   };
 
   const gestureHandler = useAnimatedGestureHandler({
@@ -76,13 +92,18 @@ export const DraggableItem = ({ item, onOrderChange, order, modalVisible }: any)
   });
 
   const animatedStyle = useAnimatedStyle(() => {
+    // (Assume calculateItemOffset is a helper that uses order.value, itemsMap, and expandedGroupsSV.value)
     const currentIndex = order.value.indexOf(id);
+    // const targetOffset = calculateItemOffset(order.value, itemsMap, expandedGroups.value, id);
     return {
       position: 'absolute',
       width: '100%',
       top: isDragging.value
         ? offsetY.value
-        : withSpring(currentIndex * ITEM_HEIGHT, { damping: 20, stiffness: 150 }),
+        : withSpring(calculateTargetOffset(), {
+            damping: 20,
+            stiffness: 150,
+          }),
       zIndex: isDragging.value ? 1 : 0,
     };
   });

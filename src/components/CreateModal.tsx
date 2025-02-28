@@ -49,44 +49,16 @@ function CreateModal({ modalVisible, setModalVisible, name }: Props) {
                     ? addList({
                         id: new Date().getTime().toString(),
                         name: input,
+                        offSet: 0,
                         type: 'list',
                         tasks: [],
                       })
                     : addList({
-                        id: new Date().getTime().toString(),
+                        id: new Date().getTime().toString() + '3e3wd3we1',
                         name: input,
+                        offSet: 0,
                         type: 'group',
-                        groups: [
-                          {
-                            id: new Date().getTime().toString(),
-                            name: 'l1',
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString(),
-                                text: 'state.input',
-                                editing: false,
-                              },
-                            ],
-                          },
-                          {
-                            id: new Date().getTime().toString(),
-                            name: 'l2',
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString(),
-                                text: 'item1',
-                                editing: false,
-                              },
-                              {
-                                id: new Date().getTime().toString(),
-                                text: 'item2',
-                                editing: false,
-                              },
-                            ],
-                          },
-                        ],
+                        groups: [],
                       })
                 }>
                 <Text className="text-2xl text-white">CREATE {name.toUpperCase()}</Text>

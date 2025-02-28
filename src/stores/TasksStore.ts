@@ -11,6 +11,7 @@ export interface TaskItemType {
 export interface TaskListsGroupsType {
   id: string;
   name: string;
+  offSet: number;
   type: 'list' | 'group';
   tasks?: TaskItemType[];
   groups?: TaskListsGroupsType[];
@@ -145,7 +146,7 @@ export const useTasksStore = create<TasksStoreType>()(
     //   })),
 
     {
-      name: 'tasks-storage2d231', // Key for MMKV
+      name: 'tasks-storage2d2e23dqwd1', // Key for MMKV
       storage: createJSONStorage(() => zustandStorage),
     }
   )
