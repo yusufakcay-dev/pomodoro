@@ -1,11 +1,15 @@
 import { Text, StyleSheet, View, Pressable } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   useAnimatedGestureHandler,
   withSpring,
   runOnJS,
+  useDerivedValue,
+  Easing,
+  withTiming,
+  withDelay,
 } from 'react-native-reanimated';
 import { Link, RelativePathString } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -27,33 +31,63 @@ export const DraggableItem = ({
   itemsMap,
   expandedGroups,
   setExpandedGroups,
+  openDropdown,
+  setOpenDropdown,
+  setRenameModalVisible,
+  setRenameInput,
+  setRenderItems,
+  setCurrentItemID,
+  deleteItem,
+  setAddRemoveListsModalVisible,
 }: any) => {
   const id = item.id;
   const isDragging = useSharedValue(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   // Function to get the current index from the shared order.
-  const getIndex = () => order.value.indexOf(id);
-  // Set offsetY based on the item's current position.
+
+  //const getIndex = () => order.value.indexOf(id);
+
   const calculateTargetOffset = () => {
     'worklet';
     const currentIndex = order.value.indexOf(id);
     let extraOffset = 0;
-    // Loop over all items that come before this one
     for (let i = 0; i < currentIndex; i++) {
       const precedingId = order.value[i];
       const precedingItem = itemsMap[precedingId];
-      // If this preceding item is an expanded group with children, add the extra offset.
       if (precedingItem && precedingItem.groups && expandedGroups[precedingId]) {
-        extraOffset += precedingItem.groups.length * ITEM_HEIGHT;
+        if (precedingItem.groups.length < 2) {
+          extraOffset += 120;
+        } else extraOffset += precedingItem.groups.length * ITEM_HEIGHT;
       }
     }
     return currentIndex * ITEM_HEIGHT + extraOffset;
   };
 
-  const offsetY = useSharedValue(calculateTargetOffset());
+  const getIndexForOffset = (offset: any) => {
+    'worklet';
+    let accumulatedOffset = 0;
+    for (let i = 0; i < order.value.length; i++) {
+      // Calculate the height for this item considering expanded groups.
+      let itemHeight = ITEM_HEIGHT;
+      const item = itemsMap[order.value[i]];
+      if (item && item.groups && expandedGroups[item.id]) {
+        itemHeight += item.groups.length * ITEM_HEIGHT;
+      }
+      // If the offset falls within this item's zone, return this index.
+      if (offset < accumulatedOffset + itemHeight) {
+        return i;
+      }
+      accumulatedOffset += itemHeight;
+    }
+    return order.value.length - 1;
+  };
+
+  // Set offsetY based on the item's current position.
+  const offsetY: any = useDerivedValue(() => {
+    return withSpring(calculateTargetOffset(), { damping: 20, stiffness: 150 });
+  });
+
   const toggleGroup = (groupId: string) => {
-    setExpandedGroups((prev) => {
-      // Check if the groupId exists and toggle its state
+    setExpandedGroups((prev: any) => {
       const newExpandedGroups = { ...prev };
       newExpandedGroups[groupId] = !newExpandedGroups[groupId];
       return newExpandedGroups;
@@ -62,29 +96,24 @@ export const DraggableItem = ({
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, context) => {
-      // Recalculate the current index on drag start.
       const currentIndex = order.value.indexOf(id);
-      context.startY = currentIndex * ITEM_HEIGHT;
-      offsetY.value = currentIndex * ITEM_HEIGHT;
-      // Track the last index to debounce swap calls.
+      context.startY = calculateTargetOffset();
       context.lastIndex = currentIndex;
-      isDragging.value = true;
     },
     onActive: (event, context: any) => {
-      offsetY.value = context.startY + event.translationY;
-      const newIndex = Math.floor(offsetY.value / ITEM_HEIGHT);
       const currentIndex = order.value.indexOf(id);
-      // Only swap when a valid, new slot is reached.
-      if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex < order.value.length) {
-        order.value = swap(order.value, currentIndex, newIndex);
+      offsetY.value = context.startY + event.translationY;
+      isDragging.value = true;
+      // Use the helper to get the new index based on the current offset.
+      const newIndex = getIndexForOffset(offsetY.value);
+      if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex <= order.value.length) {
         context.lastIndex = newIndex;
+        order.value = swap(order.value, currentIndex, newIndex);
       }
     },
     onEnd: () => {
       const finalIndex = order.value.indexOf(id);
-      // Snap the dragged item to its final position.
       offsetY.value = withSpring(finalIndex * ITEM_HEIGHT, { damping: 20, stiffness: 150 }, () => {
-        // Update the state with the new order once the animation completes.
         runOnJS(onOrderChange)(order.value);
       });
       isDragging.value = false;
@@ -92,9 +121,7 @@ export const DraggableItem = ({
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    // (Assume calculateItemOffset is a helper that uses order.value, itemsMap, and expandedGroupsSV.value)
-    const currentIndex = order.value.indexOf(id);
-    // const targetOffset = calculateItemOffset(order.value, itemsMap, expandedGroups.value, id);
+    order.value.indexOf(id);
     return {
       position: 'absolute',
       width: '100%',
@@ -109,17 +136,18 @@ export const DraggableItem = ({
   });
 
   return (
-    <Animated.View style={[styles.item, animatedStyle]}>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View>
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={[styles.item, animatedStyle]}>
+        <View>
           {item.type === 'list' ? (
-            <Link
-              href={{
-                pathname: `/${item.name}` as RelativePathString,
-                params: { tasks: JSON.stringify(item.tasks) },
-              }}>
-              <Text className="text-2xl text-white">{item.name}</Text>
-            </Link>
+            // <Link
+            //   href={{
+            //     pathname: `/${item.name}` as RelativePathString,
+            //     params: { tasks: JSON.stringify(item.tasks) },
+            //   }}>
+            //   <Text className="text-2xl text-white">{item.name}</Text>
+            // </Link>
+            <Text className="text-2xl text-white">{item.name}</Text>
           ) : (
             <View>
               {/* Group Header */}
@@ -144,10 +172,30 @@ export const DraggableItem = ({
                   {/* Dropdown Menu */}
                   {openDropdown === item.id && (
                     <View className="absolute right-0 top-10 z-50 min-w-[150px] max-w-xs rounded-lg bg-white p-2 shadow-lg">
-                      <Pressable onPress={() => console.log('Change Name')}>
-                        <Text className="py-2 text-lg text-black">Change Name</Text>
+                      <Pressable
+                        onPress={() => {
+                          setAddRemoveListsModalVisible(true);
+                          setRenderItems(false);
+                          setCurrentItemID(item.id);
+                          setOpenDropdown(null);
+                        }}>
+                        <Text className="py-2 text-lg text-black">Add/Remove lists</Text>
                       </Pressable>
-                      <Pressable onPress={() => console.log('Delete')}>
+                      <Pressable
+                        onPress={() => {
+                          setRenameInput(item.name);
+                          setCurrentItemID(item.id);
+                          setRenderItems(false);
+                          setRenameModalVisible(true);
+                          setOpenDropdown(null);
+                        }}>
+                        <Text className="py-2 text-lg text-black">Rename group</Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => {
+                          deleteItem(item.id);
+                          setOpenDropdown(null);
+                        }}>
                         <Text className="py-2 text-lg text-black">Delete</Text>
                       </Pressable>
                     </View>
@@ -160,14 +208,16 @@ export const DraggableItem = ({
                 <View className="ml-5 mt-2 border-l border-gray-500 pl-4">
                   {item.groups && item.groups.length > 0 ? (
                     item.groups.map((subItem: any) => (
-                      <Link
-                        key={subItem.id}
-                        href={{
-                          pathname: `/${subItem.name}` as RelativePathString,
-                          params: { tasks: JSON.stringify(subItem.tasks) },
-                        }}>
-                        <Text className="text-xl text-white">{subItem.name}</Text>
-                      </Link>
+                      <View className="h-[60px] justify-center">
+                        <Link
+                          key={subItem.id}
+                          href={{
+                            pathname: `/${subItem.name}` as RelativePathString,
+                            params: { tasks: JSON.stringify(subItem.tasks) },
+                          }}>
+                          <Text className=" text-xl text-white">{subItem.name}</Text>
+                        </Link>
+                      </View>
                     ))
                   ) : (
                     // Empty Group Message
@@ -179,9 +229,9 @@ export const DraggableItem = ({
               )}
             </View>
           )}
-        </Animated.View>
-      </PanGestureHandler>
-    </Animated.View>
+        </View>
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 const styles = StyleSheet.create({

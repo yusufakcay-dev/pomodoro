@@ -28,6 +28,8 @@ interface TasksStoreType {
   moveListToGroup: (listId: string, groupId: string) => void;
   moveListOutOfGroup: (listId: string) => void;
   setTaskListsGroups: (newOrder: TaskListsGroupsType[]) => void;
+  renameItem: (id: string, newName: string) => void;
+  deleteItem: (id: string) => void;
   // setInput: (input: string) => void;
   // setEditInput: (editInput: string) => void;
   // setCompletedTasksVisibility: (completedTasksVisibility: boolean) => void;
@@ -103,7 +105,18 @@ export const useTasksStore = create<TasksStoreType>()(
           return { taskListsGroups: updatedTaskLists };
         });
       },
+      renameItem: (id, newName) =>
+        set((state) => ({
+          taskListsGroups: state.taskListsGroups.map((task) =>
+            task.id === id ? { ...task, name: newName } : task
+          ),
+        })),
+      deleteItem: (id) =>
+        set((state) => ({
+          taskListsGroups: state.taskListsGroups.filter((task) => task.id !== id),
+        })),
     }),
+
     // setInput: (newInput) => set({ input: newInput }),
     // setEditInput: (newEditInput) => set({ editInput: newEditInput }),
     // setCompletedTasksVisibility: (toogleCompletedTasksVisibility) =>
@@ -146,7 +159,7 @@ export const useTasksStore = create<TasksStoreType>()(
     //   })),
 
     {
-      name: 'tasks-storage2d2e23dqwd1', // Key for MMKV
+      name: 'tasks-storage2d2e232dqwd1', // Key for MMKV
       storage: createJSONStorage(() => zustandStorage),
     }
   )
