@@ -1,0 +1,99 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import TaskItem from '../components/TaskItem';
+import { useState } from 'react';
+import { useTasksStore, TaskListsGroupsType } from '../stores/TasksStore';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+// Recursive helper to search for a list by id within groups
+function findListInGroups(
+  lists: TaskListsGroupsType[],
+  listId: string
+): TaskListsGroupsType | undefined {
+  for (const item of lists) {
+    if (item.type === 'list' && item.id === listId) {
+      return item;
+    } else if (item.type === 'group' && item.groups) {
+      const found = findListInGroups(item.groups, listId);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+
+export default function ListComponent() {
+  // Assuming listItem from params is the list ID.
+  const { listItem } = useLocalSearchParams<{ listItem: string }>();
+  const [completedTasksVisibility, setCompletedTasksVisibility] = useState(false);
+  const router = useRouter();
+  // Subscribe to the store: get the entire lists structure and input-related values.
+  const { taskListsGroups, addItem, input, setInput, deleteListGroup } = useTasksStore();
+
+  // Use the recursive helper to find the current list even if it is nested within groups.
+  const currentList = findListInGroups(taskListsGroups, listItem);
+
+  // Fallback to empty arrays if the list is not found.
+  const taskList = currentList?.tasks || [];
+  const completedTaskList = currentList?.completedTasks || [];
+
+  return (
+    <View className="flex-1 justify-between bg-[#080808]">
+      <Stack.Screen
+        options={{
+          title: `${currentList?.name}`,
+          headerStyle: {
+            backgroundColor: 'black',
+          },
+          headerTintColor: 'white',
+          headerRight: () => (
+            <Pressable
+              onPress={() => {
+                deleteListGroup(listItem);
+                router.back();
+              }}>
+              <FontAwesome6 name="trash-can" size={24} color="red" />
+            </Pressable>
+          ),
+        }}
+      />
+      <ScrollView>
+        {/* Render active tasks */}
+        {taskList.map((item: any) => (
+          <TaskItem key={item.id} item={item} listId={listItem} arrayType="completed" />
+        ))}
+        <Pressable
+          onPress={() => setCompletedTasksVisibility(!completedTasksVisibility)}
+          className="h-20 flex-row items-center rounded-lg px-3">
+          <MaterialCommunityIcons
+            name={completedTasksVisibility ? 'chevron-down' : 'chevron-right'}
+            size={35}
+            color="white"
+          />
+          <Text className="text-2xl text-white">Completed</Text>
+        </Pressable>
+        {/* Render completed tasks when visible */}
+        {completedTasksVisibility &&
+          completedTaskList.map((item: any) => (
+            <TaskItem key={item.id} item={item} listId={listItem} arrayType="uncompleted" />
+          ))}
+      </ScrollView>
+      <View className="h-14 flex-row items-center justify-between bg-white/10 px-3">
+        <TextInput
+          value={input}
+          maxLength={250}
+          onChangeText={(text) => setInput(text)}
+          className="flex-1 text-white"
+        />
+        <MaterialCommunityIcons
+          onPress={() => {
+            if (input.length === 0) return;
+            addItem(listItem);
+          }}
+          name="arrow-up-box"
+          size={35}
+          color="white"
+        />
+      </View>
+    </View>
+  );
+}

@@ -19,12 +19,14 @@ function CreateModal({ modalVisible, setModalVisible, mode, setRenderItems }: Pr
       visible={modalVisible}
       onRequestClose={() => {
         setModalVisible(!modalVisible);
+        setInput('');
       }}
       style={{ zIndex: 999 }}>
       <Pressable
         onPress={() => {
           setModalVisible(!modalVisible);
           setRenderItems(true);
+          setInput('');
         }}
         className="flex-1 justify-center 
       ">
@@ -45,80 +47,34 @@ function CreateModal({ modalVisible, setModalVisible, mode, setRenderItems }: Pr
                 onPress={() => {
                   setModalVisible(!modalVisible);
                   setRenderItems(true);
+                  setInput('');
                 }}>
                 <Text className="text-2xl text-white">CANCEL</Text>
               </Pressable>
               <Pressable
-                onPress={() =>
-                  mode === 'list'
-                    ? addList({
-                        id: new Date().getTime().toString(),
-                        name: input,
-                        offSet: 0,
-                        type: 'list',
-                        tasks: [],
-                      })
-                    : addList({
-                        id: new Date().getTime().toString() + '3e3wd3we1',
-                        name: input,
-                        offSet: 0,
-                        type: 'group',
-                        groups: [
-                          {
-                            id: new Date().getTime().toString() + '3s1w1w11ww11',
-                            name: 'l1',
-                            offSet: 0,
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString() + '31e12e12',
-                                text: 'state.input',
-                                editing: false,
-                              },
-                            ],
-                          },
-                          {
-                            id: new Date().getTime().toString() + '31dfddd',
-                            name: 'l2',
-                            offSet: 0,
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString() + '31',
-                                text: 'item1',
-                                editing: false,
-                              },
-                            ],
-                          },
-                          {
-                            id: new Date().getTime().toString() + '3s1w1w11ww11',
-                            name: 'l1',
-                            offSet: 0,
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString() + '31e12e12',
-                                text: 'state.input',
-                                editing: false,
-                              },
-                            ],
-                          },
-                          {
-                            id: new Date().getTime().toString() + '31dfddd',
-                            name: 'l2',
-                            offSet: 0,
-                            type: 'list',
-                            tasks: [
-                              {
-                                id: new Date().getTime().toString() + '31',
-                                text: 'item1',
-                                editing: false,
-                              },
-                            ],
-                          },
-                        ],
-                      })
-                }>
+                onPress={() => {
+                  if (mode === 'list') {
+                    addList({
+                      id: new Date().getTime().toString(),
+                      name: input,
+                      offSet: 0,
+                      type: 'list',
+                      tasks: [],
+                      completedTasks: [],
+                    });
+                  } else {
+                    addList({
+                      id: new Date().getTime().toString() + '3e3wd3we1',
+                      name: input,
+                      offSet: 0,
+                      type: 'group',
+                      groups: [],
+                    });
+                  }
+                  setModalVisible(!modalVisible);
+                  setRenderItems(true);
+                  setInput('');
+                }}>
                 <Text className="text-2xl text-white">CREATE {mode.toUpperCase()}</Text>
               </Pressable>
             </View>

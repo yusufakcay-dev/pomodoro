@@ -37,7 +37,7 @@ export const DraggableItem = ({
   setRenameInput,
   setRenderItems,
   setCurrentItemID,
-  deleteItem,
+  deleteListGroup,
   setAddRemoveListsModalVisible,
 }: any) => {
   const id = item.id;
@@ -140,14 +140,16 @@ export const DraggableItem = ({
       <Animated.View style={[styles.item, animatedStyle]}>
         <View>
           {item.type === 'list' ? (
-            // <Link
-            //   href={{
-            //     pathname: `/${item.name}` as RelativePathString,
-            //     params: { tasks: JSON.stringify(item.tasks) },
-            //   }}>
-            //   <Text className="text-2xl text-white">{item.name}</Text>
-            // </Link>
-            <Text className="text-2xl text-white">{item.name}</Text>
+            <Link
+              href={{
+                pathname: `/${item.id}` as RelativePathString,
+                params: {
+                  tasks: JSON.stringify(item.tasks),
+                  completedTasks: JSON.stringify(item.completedTasks),
+                },
+              }}>
+              <Text className="text-2xl text-white">{item.name}</Text>
+            </Link>
           ) : (
             <View>
               {/* Group Header */}
@@ -155,10 +157,12 @@ export const DraggableItem = ({
                 <Text className="text-2xl text-white">{item.name}</Text>
                 <View className="relative flex-row">
                   {/* Dropdown Button */}
-                  <Pressable
-                    onPress={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}>
-                    <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
-                  </Pressable>
+                  {expandedGroups[item.id] && (
+                    <Pressable
+                      onPress={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}>
+                      <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
+                    </Pressable>
+                  )}
 
                   {/* Expand/Collapse Button */}
                   <Pressable onPress={() => toggleGroup(item.id)}>
@@ -193,7 +197,7 @@ export const DraggableItem = ({
                       </Pressable>
                       <Pressable
                         onPress={() => {
-                          deleteItem(item.id);
+                          deleteListGroup(item.id);
                           setOpenDropdown(null);
                         }}>
                         <Text className="py-2 text-lg text-black">Delete</Text>
@@ -210,12 +214,14 @@ export const DraggableItem = ({
                     item.groups.map((subItem: any) => (
                       <View className="h-[60px] justify-center">
                         <Link
-                          key={subItem.id}
                           href={{
-                            pathname: `/${subItem.name}` as RelativePathString,
-                            params: { tasks: JSON.stringify(subItem.tasks) },
+                            pathname: `/${subItem.id}` as RelativePathString,
+                            params: {
+                              tasks: JSON.stringify(subItem.tasks),
+                              completedTasks: JSON.stringify(subItem.completedTasks),
+                            },
                           }}>
-                          <Text className=" text-xl text-white">{subItem.name}</Text>
+                          <Text className="text-2xl text-white">{subItem.name}</Text>
                         </Link>
                       </View>
                     ))

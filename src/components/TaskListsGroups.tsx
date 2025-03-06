@@ -19,8 +19,7 @@ function TaskListsGroups() {
   const [creating, setCreating] = useState('list');
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const expandedGroupsSV = useSharedValue(expandedGroups);
-  const { taskListsGroups, setTaskListsGroups, deleteItem, moveListOutOfGroup, moveListToGroup } =
-    useTasksStore();
+  const { taskListsGroups, setTaskListsGroups, deleteItem } = useTasksStore();
   const order = useSharedValue(taskListsGroups.map((item) => item.id));
 
   //const order2 = useDerivedValue(() => taskListsGroups.map((item) => item.id));
@@ -65,86 +64,84 @@ function TaskListsGroups() {
   }, [taskListsGroups, expandedGroups]);
 
   return (
-    <>
-      <View className="relative flex-1 justify-between bg-black px-2">
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <View style={{ height: containerHeight }}>
-            {taskListsGroups.map((item) => (
-              <>
-                {renderItems && (
-                  <DraggableItem
-                    key={item.id}
-                    item={item}
-                    onOrderChange={onOrderChange}
-                    order={order}
-                    itemsMap={itemsMap}
-                    expandedGroupsSV={expandedGroupsSV}
-                    expandedGroups={expandedGroups}
-                    setExpandedGroups={setExpandedGroups}
-                    openDropdown={openDropdown}
-                    setOpenDropdown={setOpenDropdown}
-                    setRenameModalVisible={setRenameModalVisible}
-                    setRenameInput={setRenameInput}
-                    setRenderItems={setRenderItems}
-                    setCurrentItemID={setCurrentItemID}
-                    deleteItem={deleteItem}
-                    setAddRemoveListsModalVisible={setAddRemoveListsModalVisible}
-                  />
-                )}
-              </>
-            ))}
-          </View>
-        </ScrollView>
-
-        {/* Create Modal */}
-        <CreateModal
-          modalVisible={newItemModalVisible}
-          setModalVisible={setNewItemModalVisible}
-          mode={creating}
-          setRenderItems={setRenderItems}
-        />
-        <RenameModal
-          modalVisible={renameModalVisible}
-          setModalVisible={setRenameModalVisible}
-          renameInput={renameInput}
-          setRenameInput={setRenameInput}
-          setRenderItems={setRenderItems}
-          currentItemID={currentItemID}
-        />
-
-        <AddRemoveLists
-          modalVisible={addRemoveListsModalVisible}
-          setModalVisible={setAddRemoveListsModalVisible}
-          setRenderItems={setRenderItems}
-          currentItemID={currentItemID}
-          taskListsGroups={taskListsGroups}
-        />
-
-        {/* Buttons */}
-        <View className="flex-row justify-between">
-          <Pressable
-            className="flex-row items-center gap-x-2"
-            onPress={() => {
-              setCreating('list');
-              setNewItemModalVisible(!newItemModalVisible);
-              setRenderItems(false);
-            }}>
-            <MaterialCommunityIcons name="plus" size={35} color="white" />
-            <Text className="text-2xl text-white">New List</Text>
-          </Pressable>
-          <Pressable
-            className="flex-row items-center gap-x-2"
-            onPress={() => {
-              setCreating('group');
-              setNewItemModalVisible(!newItemModalVisible);
-              setRenderItems(false);
-            }}>
-            <Text className="text-2xl text-white">New Group</Text>
-            <MaterialCommunityIcons name="playlist-plus" size={35} color="white" />
-          </Pressable>
+    <View className="relative flex-1 justify-between bg-black px-2">
+      <ScrollView keyboardShouldPersistTaps="handled">
+        <View style={{ height: containerHeight }}>
+          {taskListsGroups.map((item) => (
+            <View>
+              {renderItems && (
+                <DraggableItem
+                  key={item.id}
+                  item={item}
+                  onOrderChange={onOrderChange}
+                  order={order}
+                  itemsMap={itemsMap}
+                  expandedGroupsSV={expandedGroupsSV}
+                  expandedGroups={expandedGroups}
+                  setExpandedGroups={setExpandedGroups}
+                  openDropdown={openDropdown}
+                  setOpenDropdown={setOpenDropdown}
+                  setRenameModalVisible={setRenameModalVisible}
+                  setRenameInput={setRenameInput}
+                  setRenderItems={setRenderItems}
+                  setCurrentItemID={setCurrentItemID}
+                  deleteItem={deleteItem}
+                  setAddRemoveListsModalVisible={setAddRemoveListsModalVisible}
+                />
+              )}
+            </View>
+          ))}
         </View>
+      </ScrollView>
+
+      {/* Create Modal */}
+      <CreateModal
+        modalVisible={newItemModalVisible}
+        setModalVisible={setNewItemModalVisible}
+        mode={creating}
+        setRenderItems={setRenderItems}
+      />
+      <RenameModal
+        modalVisible={renameModalVisible}
+        setModalVisible={setRenameModalVisible}
+        renameInput={renameInput}
+        setRenameInput={setRenameInput}
+        setRenderItems={setRenderItems}
+        currentItemID={currentItemID}
+      />
+
+      <AddRemoveLists
+        modalVisible={addRemoveListsModalVisible}
+        setModalVisible={setAddRemoveListsModalVisible}
+        setRenderItems={setRenderItems}
+        currentItemID={currentItemID}
+        taskListsGroups={taskListsGroups}
+      />
+
+      {/* Buttons */}
+      <View className="flex-row justify-between">
+        <Pressable
+          className="flex-row items-center gap-x-2"
+          onPress={() => {
+            setCreating('list');
+            setNewItemModalVisible(!newItemModalVisible);
+            setRenderItems(false);
+          }}>
+          <MaterialCommunityIcons name="plus" size={35} color="white" />
+          <Text className="text-2xl text-white">New List</Text>
+        </Pressable>
+        <Pressable
+          className="flex-row items-center gap-x-2"
+          onPress={() => {
+            setCreating('group');
+            setNewItemModalVisible(!newItemModalVisible);
+            setRenderItems(false);
+          }}>
+          <Text className="text-2xl text-white">New Group</Text>
+          <MaterialCommunityIcons name="playlist-plus" size={35} color="white" />
+        </Pressable>
       </View>
-    </>
+    </View>
   );
 }
 

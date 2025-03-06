@@ -8,9 +8,10 @@ import { TaskItemType, useTasksStore } from '../stores/TasksStore';
 interface Props {
   item: TaskItemType;
   arrayType: 'completed' | 'uncompleted';
+  listId: string;
 }
 
-function TaskItem({ item, arrayType }: Props) {
+function TaskItem({ item, arrayType, listId }: Props) {
   const {
     deleteItem,
     moveToCompleted,
@@ -25,18 +26,20 @@ function TaskItem({ item, arrayType }: Props) {
     <Swipeable
       renderRightActions={RightAction}
       onSwipeableOpen={() =>
-        arrayType === 'completed' ? deleteItem(item.id) : deleteItemFromCompleted(item.id)
+        arrayType === 'completed'
+          ? deleteItem(listId, item.id)
+          : deleteItemFromCompleted(listId, item.id)
       }>
       <Pressable
-        onLongPress={() => editItem(item.id)}
-        className="my-0.5 h-20 flex-row items-center gap-x-2 rounded-lg bg-[#212121] px-3"
+        onLongPress={() => editItem(listId, item.id)}
+        className="my-0.5 h-20 flex-row items-center gap-x-2 px-3"
         onPress={() => {
           if (arrayType === 'completed') {
-            moveToCompleted(item.id);
-            deleteItem(item.id);
+            moveToCompleted(listId, item.id);
+            deleteItem(listId, item.id);
           } else {
-            moveToList(item.id);
-            deleteItemFromCompleted(item.id);
+            moveToList(listId, item.id);
+            deleteItemFromCompleted(listId, item.id);
           }
         }}>
         <MaterialCommunityIcons
@@ -53,7 +56,7 @@ function TaskItem({ item, arrayType }: Props) {
             onChangeText={(text) => {
               setEditInput(text);
             }}
-            onBlur={() => finistEditingItem(item.id)}
+            onBlur={() => finistEditingItem(listId, item.id)}
             autoFocus
           />
         ) : (

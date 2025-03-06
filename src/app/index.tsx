@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Link } from 'expo-router';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 
 import PomodoroTimer from '~/src/components/PomodoroTimer';
 async function registerForPushNotificationsAsync() {
@@ -26,10 +27,19 @@ export default function Home() {
     });
   }, []);
   return (
-    <>
+    <View className="flex-1 justify-center bg-black">
       <PomodoroTimer />
-      <Link href="/list">Go to About screen</Link>
-      <Link href="/settings">Go to Settings screen</Link>
-    </>
+      <View>
+        <Link className="text-white" href="/list">
+          Go to About screen
+        </Link>
+        <Link className="text-white" href="/settings">
+          Go to Settings screen
+        </Link>
+        <Link className="text-white" href="/statistics">
+          Go to Settings screen
+        </Link>
+      </View>
+    </View>
   );
 }

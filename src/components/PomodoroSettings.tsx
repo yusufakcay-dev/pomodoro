@@ -21,8 +21,6 @@ function PomodoroSettings() {
 
   return (
     <>
-      {' '}
-      <Text className="text-2xl text-cyan-300">Pomodoro Settings</Text>
       <SliderComponent
         header="Focus Time"
         maxValue={300}
