@@ -229,10 +229,10 @@ export const DraggableItem = ({
 
               {/* Render Lists Inside Group */}
               {expandedGroups[item.id] && item.groups ? (
-                <View className="ml-5 mt-2 border-l border-gray-500 pl-4">
+                <View key={item.id} className="ml-5 mt-2 border-l border-gray-500 pl-4">
                   {item.groups && item.groups.length > 0 ? (
                     item.groups.map((subItem: TaskListsGroupsType) => (
-                      <View className="h-[60px] justify-center">
+                      <View key={subItem.id} className="h-[60px] justify-center">
                         <Link
                           href={{
                             pathname: `/${subItem.id}` as RelativePathString,

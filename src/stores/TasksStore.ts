@@ -242,20 +242,17 @@ function removeListOrGroup(lists: TaskListsGroupsType[], id: string): TaskListsG
   for (const item of lists) {
     if (item.id === id) {
       // If the target is found:
-      // If it's a group and it has children, promote them.
+      // If it's a group with children, promote its children to top-level.
       if (item.type === 'group' && item.groups && item.groups.length > 0) {
         result.push(...item.groups);
       }
-      // Otherwise, do nothing (effectively deleting the item).
+      // Otherwise, if it's a list or an empty group, do nothing (i.e. delete it).
     } else {
-      if (item.type === 'group' && item.groups) {
-        // Recursively process the children.
-        const updatedChildren = removeListOrGroup(item.groups, id);
-        // Only keep this group if it still has children.
-        if (updatedChildren.length > 0) {
-          result.push({ ...item, groups: updatedChildren });
-        }
-        // Otherwise, if the group is now empty, do not add it.
+      if (item.type === 'group') {
+        // Recursively process the group's children.
+        const updatedChildren = item.groups ? removeListOrGroup(item.groups, id) : [];
+        // Always keep the group even if its children array is empty.
+        result.push({ ...item, groups: updatedChildren });
       } else {
         // For list items, simply keep them.
         result.push(item);
