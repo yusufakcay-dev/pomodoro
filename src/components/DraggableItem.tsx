@@ -10,7 +10,6 @@ import Animated, {
   runOnJS,
   useDerivedValue,
   SharedValue,
-  DerivedValue,
 } from 'react-native-reanimated';
 
 import { TaskListsGroupsType } from '../stores/TasksStore';
