@@ -2,7 +2,6 @@ import { Stack } from 'expo-router';
 import '~/global.css';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // This is the default configuration
 

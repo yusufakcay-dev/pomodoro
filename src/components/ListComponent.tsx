@@ -1,10 +1,11 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import TaskItem from '../components/TaskItem';
-import { useState } from 'react';
-import { useTasksStore, TaskListsGroupsType } from '../stores/TasksStore';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+
+import TaskItem from '../components/TaskItem';
+import { useTasksStore, TaskListsGroupsType, TaskItemType } from '../stores/TasksStore';
 // Recursive helper to search for a list by id within groups
 function findListInGroups(
   lists: TaskListsGroupsType[],
@@ -58,7 +59,7 @@ export default function ListComponent() {
       />
       <ScrollView>
         {/* Render active tasks */}
-        {taskList.map((item: any) => (
+        {taskList.map((item: TaskItemType) => (
           <TaskItem key={item.id} item={item} listId={listItem} arrayType="completed" />
         ))}
         <Pressable
@@ -72,10 +73,11 @@ export default function ListComponent() {
           <Text className="text-2xl text-white">Completed</Text>
         </Pressable>
         {/* Render completed tasks when visible */}
-        {completedTasksVisibility &&
-          completedTaskList.map((item: any) => (
-            <TaskItem key={item.id} item={item} listId={listItem} arrayType="uncompleted" />
-          ))}
+        {completedTasksVisibility
+          ? completedTaskList.map((item: TaskItemType) => (
+              <TaskItem key={item.id} item={item} listId={listItem} arrayType="uncompleted" />
+            ))
+          : null}
       </ScrollView>
       <View className="h-14 flex-row items-center justify-between bg-white/10 px-3">
         <TextInput

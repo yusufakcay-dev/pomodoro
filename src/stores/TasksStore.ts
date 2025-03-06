@@ -222,162 +222,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
     })),
 }));
 
-// import { create } from 'zustand';
-
-// export interface TaskItemType {
-//   id: string;
-//   text: string;
-//   editing: boolean;
-// }
-// export interface TaskListsGroupsType {
-//   id: string;
-//   name: string;
-//   offSet: number;
-//   type: 'list' | 'group';
-//   tasks?: TaskItemType[];
-//   completedTasks?: TaskItemType[];
-//   groups?: TaskListsGroupsType[];
-// }
-
-// interface TasksStoreType {
-//   input: string;
-//   editInput: string;
-//   taskListsGroups: TaskListsGroupsType[];
-//   completedTasks: TaskItemType[];
-//   completedTasksVisibility: boolean;
-//   editMode: boolean;
-//   totalTaskDone: number;
-//   addList: (list: TaskListsGroupsType) => void;
-//   moveListToGroup: (listId: string, groupId: string) => void;
-//   moveListOutOfGroup: (listId: string) => void;
-//   setTaskListsGroups: (newOrder: TaskListsGroupsType[]) => void;
-//   renameItem: (id: string, newName: string) => void;
-//   deleteItem: (id: string) => void;
-// setInput: (input: string) => void;
-// setEditInput: (editInput: string) => void;
-// setCompletedTasksVisibility: (completedTasksVisibility: boolean) => void;
-// deleteItem: (id: string) => void;
-// deleteItemFromCompleted: (id: string) => void;
-// addItem: () => void;
-// moveToCompleted: (id: string) => void;
-// moveToList: (id: string) => void;
-// editItem: (id: string) => void;
-// finistEditingItem: (id: string) => void;
-// }
-
-// export const useTasksStore = create<TasksStoreType>(
-//   (set) => ({
-//     input: '',
-//     editInput: '',
-//     taskListsGroups: [],
-//     completedTasks: [],
-//     completedTasksVisibility: false,
-//     editMode: false,
-//     totalTaskDone: 0,
-//     addList: (list) => set((state) => ({ taskListsGroups: [...state.taskListsGroups, list] })),
-//     setTaskListsGroups: (newOrder) => set({ taskListsGroups: newOrder }),
-//     moveListToGroup: (listId, groupId) => {
-//       set((state) => {
-//         let listToMove: TaskListsGroupsType | null = null;
-//         let updatedTaskLists = state.taskListsGroups.filter((list) => {
-//           if (list.id === listId) {
-//             listToMove = list;
-//             return false; // Remove the list from top-level
-//           }
-//           return true;
-//         });
-
-//         if (!listToMove) return state; // If list not found, do nothing
-
-//         updatedTaskLists = updatedTaskLists.map((group) => {
-//           if (group.id === groupId && group.type === 'group') {
-//             return {
-//               ...group,
-//               groups: [...(group.groups || []), listToMove!], // Add list to group
-//             };
-//           }
-//           return group;
-//         });
-
-//         return { taskListsGroups: updatedTaskLists };
-//       });
-//     },
-
-//     moveListOutOfGroup: (listId) => {
-//       set((state) => {
-//         let listToMove: TaskListsGroupsType | null = null;
-//         const updatedTaskLists = state.taskListsGroups.map((group) => {
-//           if (group.type === 'group' && group.groups) {
-//             const filteredGroups = group.groups.filter((list) => {
-//               if (list.id === listId) {
-//                 listToMove = list;
-//                 return false; // Remove from group
-//               }
-//               return true;
-//             });
-
-//             return { ...group, groups: filteredGroups };
-//           }
-//           return group;
-//         });
-
-//         if (listToMove) {
-//           updatedTaskLists.push(listToMove); // Move list to top level
-//         }
-
-//         return { taskListsGroups: updatedTaskLists };
-//       });
-//     },
-//     renameItem: (id, newName) =>
-//       set((state) => ({
-//         taskListsGroups: state.taskListsGroups.map((task) =>
-//           task.id === id ? { ...task, name: newName } : task
-//         ),
-//       })),
-//     deleteItem: (id) =>
-//       set((state) => ({
-//         taskListsGroups: state.taskListsGroups.filter((task) => task.id !== id),
-//       })),
-//   })
-
-// deleteItem: (id) => set((state) => ({ tasks: state.tasks.filter((task) => task.id !== id) })),
-// deleteItemFromCompleted: (id) =>
-//   set((state) => ({ completedTasks: state.completedTasks.filter((task) => task.id !== id) })),
-// addItem: () =>
-//   set((state) => ({
-//     tasks: [
-//       ...state.tasks,
-//       { id: new Date().getTime().toString(), text: state.input, editing: false },
-//     ],
-//     input: '',
-//   })),
-// moveToCompleted: (id) =>
-//   set((state) => ({
-//     completedTasks: [
-//       ...state.completedTasks,
-//       state.tasks.filter((filter) => filter.id === id)[0],
-//     ],
-//   })),
-// moveToList: (id) =>
-//   set((state) => ({
-//     tasks: [...state.tasks, state.completedTasks.filter((filter) => filter.id === id)[0]],
-//   })),
-// editItem: (id) =>
-//   set((state) => ({
-//     editMode: true,
-//     tasks: state.tasks.map((task) => (task.id === id ? { ...task, editing: true } : task)),
-//     editInput: state.tasks.find((task) => task.id === id)?.text || '',
-//   })),
-// finistEditingItem: (id) =>
-//   set((state) => ({
-//     editMode: false,
-//     tasks: state.tasks.map((task) =>
-//       task.id === id ? { ...task, editing: false, text: state.editInput } : task
-//     ),
-//     editInput: '',
-//   })),
-// );
-// Helper function to recursively update a list (even if nested within groups)
 function updateListInGroups(
   lists: TaskListsGroupsType[],
   listId: string,
@@ -394,14 +238,29 @@ function updateListInGroups(
 }
 
 function removeListOrGroup(lists: TaskListsGroupsType[], id: string): TaskListsGroupsType[] {
-  return lists
-    .map((list) => {
-      if (list.id === id) {
-        return null; // Remove the item
-      } else if (list.type === 'group' && list.groups) {
-        return { ...list, groups: removeListOrGroup(list.groups, id) };
+  const result: TaskListsGroupsType[] = [];
+  for (const item of lists) {
+    if (item.id === id) {
+      // If the target is found:
+      // If it's a group and it has children, promote them.
+      if (item.type === 'group' && item.groups && item.groups.length > 0) {
+        result.push(...item.groups);
       }
-      return list;
-    })
-    .filter(Boolean) as TaskListsGroupsType[]; // Filter out null values
+      // Otherwise, do nothing (effectively deleting the item).
+    } else {
+      if (item.type === 'group' && item.groups) {
+        // Recursively process the children.
+        const updatedChildren = removeListOrGroup(item.groups, id);
+        // Only keep this group if it still has children.
+        if (updatedChildren.length > 0) {
+          result.push({ ...item, groups: updatedChildren });
+        }
+        // Otherwise, if the group is now empty, do not add it.
+      } else {
+        // For list items, simply keep them.
+        result.push(item);
+      }
+    }
+  }
+  return result;
 }

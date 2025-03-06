@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
-import { TaskListsGroupsType, useTasksStore } from '../stores/TasksStore';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useMemo } from 'react';
+import { Modal, Pressable, Text, View } from 'react-native';
+
+import { TaskListsGroupsType, useTasksStore } from '../stores/TasksStore';
 
 interface Props {
   modalVisible: boolean;

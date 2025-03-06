@@ -1,11 +1,7 @@
 import Analytics from '../components/Analytics';
 
-function statistic() {
-  return (
-    <>
-      <Analytics />
-    </>
-  );
+function Statistic() {
+  return <Analytics />;
 }
 
-export default statistic;
+export default Statistic;

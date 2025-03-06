@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
+
 import { useTasksStore } from '../stores/TasksStore';
 
 interface Props {

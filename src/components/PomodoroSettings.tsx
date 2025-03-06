@@ -1,6 +1,7 @@
 import { Switch, Text, View } from 'react-native';
-import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
+
 import SliderComponent from './SliderComponent';
+import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
 function PomodoroSettings() {
   const {
     setFocusTime,

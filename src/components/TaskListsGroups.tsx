@@ -1,12 +1,13 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { TaskListsGroupsType, useTasksStore } from '../stores/TasksStore';
+import { useSharedValue } from 'react-native-reanimated';
+
+import AddRemoveLists from './AddRemoveLists';
 import CreateModal from './CreateModal';
 import { DraggableItem, ITEM_HEIGHT } from './DraggableItem';
-import { useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import RenameModal from './RenameModal';
-import AddRemoveLists from './AddRemoveLists';
+import { TaskListsGroupsType, useTasksStore } from '../stores/TasksStore';
 
 function TaskListsGroups() {
   const [newItemModalVisible, setNewItemModalVisible] = useState(false);
@@ -19,7 +20,7 @@ function TaskListsGroups() {
   const [creating, setCreating] = useState('list');
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const expandedGroupsSV = useSharedValue(expandedGroups);
-  const { taskListsGroups, setTaskListsGroups, deleteItem } = useTasksStore();
+  const { taskListsGroups, setTaskListsGroups, deleteListGroup } = useTasksStore();
   const order = useSharedValue(taskListsGroups.map((item) => item.id));
 
   //const order2 = useDerivedValue(() => taskListsGroups.map((item) => item.id));
@@ -27,11 +28,11 @@ function TaskListsGroups() {
     expandedGroupsSV.value = expandedGroups;
   }, [expandedGroups]);
 
-  const onOrderChange = (newOrder: any) => {
+  const onOrderChange = (newOrder: string[]): void => {
     // Reorder the state based on the new order (which is an array of IDs).
-    const newData = newOrder.map((orderId: any) =>
-      taskListsGroups.find((item) => item.id === orderId)
-    );
+    const newData: TaskListsGroupsType[] = newOrder
+      .map((orderId: string) => taskListsGroups.find((item) => item.id === orderId))
+      .filter((item): item is TaskListsGroupsType => item !== undefined);
     setTaskListsGroups(newData);
   };
 
@@ -67,30 +68,27 @@ function TaskListsGroups() {
     <View className="relative flex-1 justify-between bg-black px-2">
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={{ height: containerHeight }}>
-          {taskListsGroups.map((item) => (
-            <View>
-              {renderItems && (
-                <DraggableItem
-                  key={item.id}
-                  item={item}
-                  onOrderChange={onOrderChange}
-                  order={order}
-                  itemsMap={itemsMap}
-                  expandedGroupsSV={expandedGroupsSV}
-                  expandedGroups={expandedGroups}
-                  setExpandedGroups={setExpandedGroups}
-                  openDropdown={openDropdown}
-                  setOpenDropdown={setOpenDropdown}
-                  setRenameModalVisible={setRenameModalVisible}
-                  setRenameInput={setRenameInput}
-                  setRenderItems={setRenderItems}
-                  setCurrentItemID={setCurrentItemID}
-                  deleteItem={deleteItem}
-                  setAddRemoveListsModalVisible={setAddRemoveListsModalVisible}
-                />
-              )}
-            </View>
-          ))}
+          {taskListsGroups.map((item) =>
+            renderItems ? (
+              <DraggableItem
+                key={item.id}
+                item={item}
+                onOrderChange={onOrderChange}
+                order={order}
+                itemsMap={itemsMap}
+                expandedGroups={expandedGroups}
+                setExpandedGroups={setExpandedGroups}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                setRenameModalVisible={setRenameModalVisible}
+                setRenameInput={setRenameInput}
+                setRenderItems={setRenderItems}
+                setCurrentItemID={setCurrentItemID}
+                deleteListGroup={deleteListGroup}
+                setAddRemoveListsModalVisible={setAddRemoveListsModalVisible}
+              />
+            ) : null
+          )}
         </View>
       </ScrollView>
 

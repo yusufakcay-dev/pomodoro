@@ -1,11 +1,7 @@
 import TaskListsGroups from '../components/TaskListsGroups';
 
-function list() {
-  return (
-    <>
-      <TaskListsGroups />;
-    </>
-  );
+function List() {
+  return <TaskListsGroups />;
 }
 
-export default list;
+export default List;

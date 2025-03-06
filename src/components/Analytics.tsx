@@ -5,6 +5,11 @@ import { BarChart } from 'react-native-gifted-charts';
 import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
 import { useTasksStore } from '../stores/TasksStore';
 
+interface BarChartItem {
+  value: number;
+  label: string;
+}
+
 function Analytics() {
   const { dailyRecords, focusCount, totalFocusTime, totalBreakTime } = usePomodoroTimerStore();
   const { totalTaskDone } = useTasksStore();
@@ -113,7 +118,7 @@ function Analytics() {
             yAxisThickness={0} // Hides the y-axis line
             xAxisThickness={0} // Hides the x-axis line
             color="white" // Contrast color for the bars
-            renderTooltip={(item: any) => (
+            renderTooltip={(item: BarChartItem) => (
               <View
                 style={{
                   paddingHorizontal: 0,

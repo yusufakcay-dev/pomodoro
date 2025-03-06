@@ -42,7 +42,7 @@ function PomodoroTimer() {
 
 const styles = StyleSheet.create({
   clock: {
-    fontSize: RFPercentage(20),
+    fontSize: RFPercentage(15),
     textAlign: 'center',
     color: 'white',
   },

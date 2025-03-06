@@ -1,5 +1,7 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Link, RelativePathString } from 'expo-router';
 import { Text, StyleSheet, View, Pressable } from 'react-native';
-import { Gesture, GestureDetector, PanGestureHandler } from 'react-native-gesture-handler';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,15 +9,30 @@ import Animated, {
   withSpring,
   runOnJS,
   useDerivedValue,
-  Easing,
-  withTiming,
-  withDelay,
+  SharedValue,
+  DerivedValue,
 } from 'react-native-reanimated';
-import { Link, RelativePathString } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+
+import { TaskListsGroupsType } from '../stores/TasksStore';
 
 export const ITEM_HEIGHT = 60;
+
+interface Props {
+  item: TaskListsGroupsType;
+  onOrderChange: (newOrder: string[]) => void;
+  order: SharedValue<string[]>;
+  itemsMap: Record<string, TaskListsGroupsType>;
+  expandedGroups: Record<string, boolean>;
+  setExpandedGroups: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  openDropdown: string | null;
+  setOpenDropdown: React.Dispatch<React.SetStateAction<string | null>>;
+  setRenameModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setRenameInput: React.Dispatch<React.SetStateAction<string>>;
+  setRenderItems: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentItemID: React.Dispatch<React.SetStateAction<string>>;
+  deleteListGroup: (id: string) => void;
+  setAddRemoveListsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const swap = (array: any, from: number, to: number) => {
   'worklet';
@@ -39,10 +56,9 @@ export const DraggableItem = ({
   setCurrentItemID,
   deleteListGroup,
   setAddRemoveListsModalVisible,
-}: any) => {
+}: Props) => {
   const id = item.id;
   const isDragging = useSharedValue(false);
-  // Function to get the current index from the shared order.
 
   //const getIndex = () => order.value.indexOf(id);
 
@@ -62,23 +78,28 @@ export const DraggableItem = ({
     return currentIndex * ITEM_HEIGHT + extraOffset;
   };
 
-  const getIndexForOffset = (offset: any) => {
+  const getIndexForOffset = (offset: number) => {
     'worklet';
-    let accumulatedOffset = 0;
+    let bestIndex = 0;
+    let smallestDiff = Number.MAX_VALUE;
     for (let i = 0; i < order.value.length; i++) {
-      // Calculate the height for this item considering expanded groups.
-      let itemHeight = ITEM_HEIGHT;
-      const item = itemsMap[order.value[i]];
-      if (item && item.groups && expandedGroups[item.id]) {
-        itemHeight += item.groups.length * ITEM_HEIGHT;
+      // Compute the target offset for this index using the same logic as calculateTargetOffset.
+      let targetOffset = i * ITEM_HEIGHT;
+      for (let j = 0; j < i; j++) {
+        const precedingId = order.value[j];
+        const precedingItem = itemsMap[precedingId];
+        if (precedingItem && precedingItem.groups && expandedGroups[precedingId]) {
+          targetOffset +=
+            precedingItem.groups.length < 2 ? 120 : precedingItem.groups.length * ITEM_HEIGHT;
+        }
       }
-      // If the offset falls within this item's zone, return this index.
-      if (offset < accumulatedOffset + itemHeight) {
-        return i;
+      const diff = Math.abs(offset - targetOffset);
+      if (diff < smallestDiff) {
+        smallestDiff = diff;
+        bestIndex = i;
       }
-      accumulatedOffset += itemHeight;
     }
-    return order.value.length - 1;
+    return bestIndex;
   };
 
   // Set offsetY based on the item's current position.
@@ -87,7 +108,7 @@ export const DraggableItem = ({
   });
 
   const toggleGroup = (groupId: string) => {
-    setExpandedGroups((prev: any) => {
+    setExpandedGroups((prev: Record<string, boolean>) => {
       const newExpandedGroups = { ...prev };
       newExpandedGroups[groupId] = !newExpandedGroups[groupId];
       return newExpandedGroups;
@@ -104,9 +125,8 @@ export const DraggableItem = ({
       const currentIndex = order.value.indexOf(id);
       offsetY.value = context.startY + event.translationY;
       isDragging.value = true;
-      // Use the helper to get the new index based on the current offset.
       const newIndex = getIndexForOffset(offsetY.value);
-      if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex <= order.value.length) {
+      if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex < order.value.length) {
         context.lastIndex = newIndex;
         order.value = swap(order.value, currentIndex, newIndex);
       }
@@ -174,7 +194,7 @@ export const DraggableItem = ({
                   </Pressable>
 
                   {/* Dropdown Menu */}
-                  {openDropdown === item.id && (
+                  {openDropdown === item.id ? (
                     <View className="absolute right-0 top-10 z-50 min-w-[150px] max-w-xs rounded-lg bg-white p-2 shadow-lg">
                       <Pressable
                         onPress={() => {
@@ -203,15 +223,15 @@ export const DraggableItem = ({
                         <Text className="py-2 text-lg text-black">Delete</Text>
                       </Pressable>
                     </View>
-                  )}
+                  ) : null}
                 </View>
               </View>
 
               {/* Render Lists Inside Group */}
-              {expandedGroups[item.id] && item.groups && (
+              {expandedGroups[item.id] && item.groups ? (
                 <View className="ml-5 mt-2 border-l border-gray-500 pl-4">
                   {item.groups && item.groups.length > 0 ? (
-                    item.groups.map((subItem: any) => (
+                    item.groups.map((subItem: TaskListsGroupsType) => (
                       <View className="h-[60px] justify-center">
                         <Link
                           href={{
@@ -232,7 +252,7 @@ export const DraggableItem = ({
                     </Text>
                   )}
                 </View>
-              )}
+              ) : null}
             </View>
           )}
         </View>
