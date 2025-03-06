@@ -16,6 +16,10 @@ import { TaskListsGroupsType } from '../stores/TasksStore';
 
 export const ITEM_HEIGHT = 60;
 
+type DragContext = {
+  startY: number;
+  lastIndex: number;
+};
 interface Props {
   item: TaskListsGroupsType;
   onOrderChange: (newOrder: string[]) => void;
@@ -33,7 +37,7 @@ interface Props {
   setAddRemoveListsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const swap = (array: any, from: number, to: number) => {
+const swap = (array: string[], from: number, to: number) => {
   'worklet';
   const newArray = [...array];
   newArray.splice(to, 0, newArray.splice(from, 1)[0]);
@@ -102,9 +106,7 @@ export const DraggableItem = ({
   };
 
   // Set offsetY based on the item's current position.
-  const offsetY: any = useDerivedValue(() => {
-    return withSpring(calculateTargetOffset(), { damping: 20, stiffness: 150 });
-  });
+  const offsetY = useSharedValue(calculateTargetOffset());
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev: Record<string, boolean>) => {
@@ -120,9 +122,10 @@ export const DraggableItem = ({
       context.startY = calculateTargetOffset();
       context.lastIndex = currentIndex;
     },
-    onActive: (event, context: any) => {
+    onActive: (event, context) => {
+      const typedContext = context as DragContext;
       const currentIndex = order.value.indexOf(id);
-      offsetY.value = context.startY + event.translationY;
+      offsetY.value = typedContext.startY + event.translationY;
       isDragging.value = true;
       const newIndex = getIndexForOffset(offsetY.value);
       if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex < order.value.length) {
