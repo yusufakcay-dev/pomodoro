@@ -5,8 +5,7 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
 
 function PomodoroTimer() {
-  const { isTicking, tick, startStopTimer, sessionTimer, resetTimer, sessionType } =
-    usePomodoroTimerStore();
+  const { isTicking, tick, startStopTimer, sessionTimer } = usePomodoroTimerStore();
   useEffect(() => {
     let timerId: NodeJS.Timeout;
     if (isTicking) {
@@ -32,17 +31,13 @@ function PomodoroTimer() {
           {formatTime(sessionTimer)}
         </Text>
       </Pressable>
-      <Pressable onTouchStart={() => resetTimer()}>
-        <Text className=" text-white">reset</Text>
-        <Text className=" text-white">{sessionType}</Text>
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   clock: {
-    fontSize: RFPercentage(15),
+    fontSize: RFPercentage(16),
     textAlign: 'center',
     color: 'white',
   },

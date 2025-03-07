@@ -8,7 +8,6 @@ import Animated, {
   useAnimatedGestureHandler,
   withSpring,
   runOnJS,
-  useDerivedValue,
   SharedValue,
 } from 'react-native-reanimated';
 
