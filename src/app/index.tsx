@@ -22,11 +22,27 @@ async function registerForPushNotificationsAsync() {
   console.log('Notification permissions granted');
 }
 export default function Home() {
-  const { resetTimer } = usePomodoroTimerStore();
+  const { resetTimer, incrementTimer, forceCompleteSession } = usePomodoroTimerStore();
 
-  const flingGesture = Gesture.Fling()
+  const flingGestureDown = Gesture.Fling()
     .direction(Directions.DOWN)
     .onStart(() => runOnJS(resetTimer)());
+  const flingGestureUp = Gesture.Fling()
+    .direction(Directions.UP)
+    .onStart(() => runOnJS(incrementTimer)(60));
+  const flingGestureLeft = Gesture.Fling()
+    .direction(Directions.LEFT)
+    .onStart(() => runOnJS(forceCompleteSession)());
+  const flingGestureRight = Gesture.Fling()
+    .direction(Directions.RIGHT)
+    .onStart(() => runOnJS(forceCompleteSession)());
+
+  const gestureDirections = Gesture.Exclusive(
+    flingGestureUp,
+    flingGestureDown,
+    flingGestureLeft,
+    flingGestureRight
+  );
 
   useEffect(() => {
     registerForPushNotificationsAsync();
@@ -39,7 +55,7 @@ export default function Home() {
     });
   }, []);
   return (
-    <GestureDetector gesture={flingGesture}>
+    <GestureDetector gesture={gestureDirections}>
       <Animated.View className="flex-1 justify-between bg-black">
         <View className="flex-1 justify-center">
           <PomodoroTimer />

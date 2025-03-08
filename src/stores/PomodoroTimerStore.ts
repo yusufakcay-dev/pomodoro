@@ -22,6 +22,7 @@ interface PomodoroTimerStore {
   totalFocusTime: number;
   totalBreakTime: number;
   dailyRecords: DailyRecord[]; // NEW: Array holding daily stats
+  incrementTimer: (newTime: number) => void;
   setFocusTime: (newTime: number) => void;
   setBreakTime: (newTime: number) => void;
   setLongBreak: (newBool: boolean) => void;
@@ -32,6 +33,7 @@ interface PomodoroTimerStore {
   startStopTimer: () => void;
   resetTimer: () => void;
   tick: () => void;
+  forceCompleteSession: () => void;
 }
 
 export const usePomodoroTimerStore = create<PomodoroTimerStore>((set) => ({
@@ -49,6 +51,7 @@ export const usePomodoroTimerStore = create<PomodoroTimerStore>((set) => ({
   totalFocusTime: 0,
   totalBreakTime: 0,
   dailyRecords: [], // Initialize with an empty array
+  incrementTimer: (newTime) => set((state) => ({ sessionTimer: (state.sessionTimer += newTime) })),
   setFocusTime: (newTime) => set({ focusSession: newTime }),
   setBreakTime: (newTime) => set({ breakSession: newTime }),
   setLongBreak: (newBool) => set({ longBreak: newBool }),
@@ -70,6 +73,7 @@ export const usePomodoroTimerStore = create<PomodoroTimerStore>((set) => ({
     set((state) =>
       state.sessionTimer > 0 ? handleSession(state) : handleSessionCompletion(state)
     ),
+  forceCompleteSession: () => set((state) => handleSessionCompletion(state)),
 }));
 
 // Helper function to update or add the daily record for today
