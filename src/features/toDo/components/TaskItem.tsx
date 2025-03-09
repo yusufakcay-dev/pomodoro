@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Dimensions, Pressable, Text, TextInput } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Reanimated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { TaskItemType, useTasksStore } from '../stores/TasksStore';
 
@@ -82,11 +82,11 @@ const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
     }
   });
   return (
-    <Reanimated.View
+    <Animated.View
       className="my-0.5 h-20 w-screen justify-center rounded-lg px-5"
       style={styleAnimation}>
       <MaterialCommunityIcons name="trash-can-outline" size={35} color="white" />
-    </Reanimated.View>
+    </Animated.View>
   );
 };
 

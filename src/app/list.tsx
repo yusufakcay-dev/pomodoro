@@ -1,7 +1,8 @@
-import TaskListsGroups from '../components/TaskListsGroups';
+import ToDo from '../features/toDo';
+import TaskListsGroups from '../features/toDo/components/TaskListsGroups';
 
 function List() {
-  return <TaskListsGroups />;
+  return <ToDo />;
 }
 
 export default List;

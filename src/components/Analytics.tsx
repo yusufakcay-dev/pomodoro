@@ -3,7 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 
 import { usePomodoroTimerStore } from '../stores/PomodoroTimerStore';
-import { useTasksStore } from '../stores/TasksStore';
+import { useTasksStore } from '../features/toDo/stores/TasksStore';
 
 interface BarChartItem {
   value: number;

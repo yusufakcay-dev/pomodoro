@@ -62,8 +62,6 @@ export const DraggableItem = ({
   const id = item.id;
   const isDragging = useSharedValue(false);
 
-  //const getIndex = () => order.value.indexOf(id);
-
   const calculateTargetOffset = () => {
     'worklet';
     const currentIndex = order.value.indexOf(id);
@@ -79,6 +77,8 @@ export const DraggableItem = ({
     }
     return currentIndex * ITEM_HEIGHT + extraOffset;
   };
+
+  const offsetY = useSharedValue(calculateTargetOffset());
 
   const getIndexForOffset = (offset: number) => {
     'worklet';
@@ -104,9 +104,6 @@ export const DraggableItem = ({
     return bestIndex;
   };
 
-  // Set offsetY based on the item's current position.
-  const offsetY = useSharedValue(calculateTargetOffset());
-
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev: Record<string, boolean>) => {
       const newExpandedGroups = { ...prev };
@@ -117,9 +114,7 @@ export const DraggableItem = ({
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, context) => {
-      const currentIndex = order.value.indexOf(id);
       context.startY = calculateTargetOffset();
-      context.lastIndex = currentIndex;
     },
     onActive: (event, context) => {
       const typedContext = context as DragContext;
@@ -127,8 +122,7 @@ export const DraggableItem = ({
       offsetY.value = typedContext.startY + event.translationY;
       isDragging.value = true;
       const newIndex = getIndexForOffset(offsetY.value);
-      if (newIndex !== context.lastIndex && newIndex >= 0 && newIndex < order.value.length) {
-        context.lastIndex = newIndex;
+      if (newIndex !== currentIndex && newIndex >= 0 && newIndex < order.value.length) {
         order.value = swap(order.value, currentIndex, newIndex);
       }
     },

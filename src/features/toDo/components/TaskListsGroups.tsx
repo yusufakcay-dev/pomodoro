@@ -23,7 +23,6 @@ function TaskListsGroups() {
   const { taskListsGroups, setTaskListsGroups, deleteListGroup } = useTasksStore();
   const order = useSharedValue(taskListsGroups.map((item) => item.id));
 
-  //const order2 = useDerivedValue(() => taskListsGroups.map((item) => item.id));
   useEffect(() => {
     expandedGroupsSV.value = expandedGroups;
   }, [expandedGroups]);
