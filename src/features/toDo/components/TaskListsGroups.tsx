@@ -64,7 +64,7 @@ function TaskListsGroups() {
   }, [taskListsGroups, expandedGroups]);
 
   return (
-    <View className="relative flex-1 justify-between bg-black px-2">
+    <View className="relative flex-1 justify-between bg-black p-4">
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={{ height: containerHeight }}>
           {taskListsGroups.map((item) =>

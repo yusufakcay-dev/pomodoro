@@ -21,7 +21,7 @@ function PomodoroSettings() {
   } = usePomodoroTimerStore();
 
   return (
-    <>
+    <View className="flex-1 gap-y-5 p-5">
       <SliderComponent
         header="Focus Time"
         maxValue={300}
@@ -37,9 +37,7 @@ function PomodoroSettings() {
       <View className="flex-row justify-between ">
         <Text className="text-2xl text-white">Enable Long Break</Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={longBreak ? '#f5dd4b' : '#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
+          trackColor={{ false: 'white', true: 'white' }}
           onValueChange={setLongBreak}
           value={longBreak}
         />
@@ -63,9 +61,7 @@ function PomodoroSettings() {
       <View className="flex-row justify-between ">
         <Text className="text-2xl text-white">Auto Start Focus</Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={longBreak ? '#f5dd4b' : '#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
+          trackColor={{ false: 'white', true: 'white' }}
           onValueChange={setContinueAfterBreak}
           value={continueAfterBreak}
         />
@@ -73,14 +69,12 @@ function PomodoroSettings() {
       <View className="flex-row justify-between ">
         <Text className="text-2xl text-white">Auto Start Break</Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={longBreak ? '#f5dd4b' : '#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
+          trackColor={{ false: 'white', true: 'white' }}
           onValueChange={setContinueAfterFocus}
           value={continueAfterFocus}
         />
       </View>
-    </>
+    </View>
   );
 }
 

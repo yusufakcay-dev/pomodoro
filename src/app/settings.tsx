@@ -5,7 +5,7 @@ import PomodoroSettings from '../components/PomodoroSettings';
 function Settings() {
   return (
     <ScrollView className="bg-black">
-      <View className="flex-1 gap-y-5 p-5">
+      <View className="flex-1">
         <PomodoroSettings />
       </View>
     </ScrollView>
