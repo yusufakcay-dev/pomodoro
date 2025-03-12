@@ -42,6 +42,7 @@ function AddRemoveLists({
       visible={modalVisible}
       onRequestClose={() => {
         setModalVisible(!modalVisible);
+        setRenderItems(true);
       }}
       style={{ zIndex: 999 }}>
       <Pressable

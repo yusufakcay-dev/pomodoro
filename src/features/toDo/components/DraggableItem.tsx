@@ -1,4 +1,5 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Link, RelativePathString } from 'expo-router';
 import { Text, StyleSheet, View, Pressable } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -9,6 +10,8 @@ import Animated, {
   withSpring,
   runOnJS,
   SharedValue,
+  FadeIn,
+  FadeOut,
 } from 'react-native-reanimated';
 
 import { TaskListsGroupsType } from '../stores/TasksStore';
@@ -163,24 +166,40 @@ export const DraggableItem = ({
                   completedTasks: JSON.stringify(item.completedTasks),
                 },
               }}>
-              <Text className="text-2xl text-white">{item.name}</Text>
+              <View className="flex-row items-center gap-x-2">
+                <MaterialIcons name="format-list-bulleted" size={30} color="white" />
+                <Text className="text-2xl text-white">{item.name}</Text>
+              </View>
             </Link>
           ) : (
             <View>
               {/* Group Header */}
               <View className="flex-row items-center justify-between">
-                <Text className="text-2xl text-white">{item.name}</Text>
+                <View className="flex-row items-center gap-x-2">
+                  {expandedGroups[item.id] ? null : (
+                    <Animated.View entering={FadeIn.duration(500)}>
+                      <MaterialIcons name="format-list-bulleted" size={30} color="white" />
+                    </Animated.View>
+                  )}
+                  <Text className="text-2xl text-white">{item.name}</Text>
+                </View>
                 <View className="relative flex-row">
                   {/* Dropdown Button */}
-                  {expandedGroups[item.id] && (
-                    <Pressable
-                      onPress={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}>
-                      <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
-                    </Pressable>
-                  )}
+                  {expandedGroups[item.id] ? (
+                    <Animated.View exiting={FadeOut.duration(500)} entering={FadeIn.duration(500)}>
+                      <Pressable
+                        onPress={() => setOpenDropdown(openDropdown === item.id ? null : item.id)}>
+                        <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
+                      </Pressable>
+                    </Animated.View>
+                  ) : null}
 
                   {/* Expand/Collapse Button */}
-                  <Pressable onPress={() => toggleGroup(item.id)}>
+                  <Pressable
+                    onPress={() => {
+                      setOpenDropdown(null);
+                      toggleGroup(item.id);
+                    }}>
                     <MaterialCommunityIcons
                       name={expandedGroups[item.id] ? 'chevron-down' : 'chevron-left'}
                       size={35}
@@ -224,7 +243,10 @@ export const DraggableItem = ({
 
               {/* Render Lists Inside Group */}
               {expandedGroups[item.id] && item.groups ? (
-                <View key={item.id} className="ml-5 mt-2 border-l border-gray-500 pl-4">
+                <Animated.View
+                  entering={FadeIn.duration(500)}
+                  key={item.id}
+                  className="ml-5 mt-2 border-l border-gray-500 pl-4">
                   {item.groups && item.groups.length > 0 ? (
                     item.groups.map((subItem: TaskListsGroupsType) => (
                       <View key={subItem.id} className="h-[60px] justify-center">
@@ -236,7 +258,10 @@ export const DraggableItem = ({
                               completedTasks: JSON.stringify(subItem.completedTasks),
                             },
                           }}>
-                          <Text className="text-2xl text-white">{subItem.name}</Text>
+                          <View className="flex-row items-center gap-x-2">
+                            <MaterialIcons name="format-list-bulleted" size={30} color="white" />
+                            <Text className="text-2xl text-white">{subItem.name}</Text>
+                          </View>
                         </Link>
                       </View>
                     ))
@@ -246,7 +271,7 @@ export const DraggableItem = ({
                       Drag or click to add item
                     </Text>
                   )}
-                </View>
+                </Animated.View>
               ) : null}
             </View>
           )}

@@ -20,6 +20,7 @@ function CreateModal({ modalVisible, setModalVisible, mode, setRenderItems }: Pr
       visible={modalVisible}
       onRequestClose={() => {
         setModalVisible(!modalVisible);
+        setRenderItems(true);
         setInput('');
       }}
       style={{ zIndex: 999 }}>

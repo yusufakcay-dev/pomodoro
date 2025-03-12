@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import TaskItem from '../components/TaskItem';
 import { useTasksStore, TaskListsGroupsType, TaskItemType } from '../stores/TasksStore';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 // Recursive helper to search for a list by id within groups
 function findListInGroups(
   lists: TaskListsGroupsType[],
@@ -23,11 +24,9 @@ function findListInGroups(
 }
 
 export default function ListComponent() {
-  // Assuming listItem from params is the list ID.
   const { listItem } = useLocalSearchParams<{ listItem: string }>();
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState(false);
   const router = useRouter();
-  // Subscribe to the store: get the entire lists structure and input-related values.
   const { taskListsGroups, addItem, input, setInput, deleteListGroup } = useTasksStore();
 
   // Use the recursive helper to find the current list even if it is nested within groups.
@@ -38,7 +37,7 @@ export default function ListComponent() {
   const completedTaskList = currentList?.completedTasks || [];
 
   return (
-    <View className="flex-1 justify-between bg-[#080808]">
+    <View className="flex-1 bg-black">
       <Stack.Screen
         options={{
           title: `${currentList?.name}`,
@@ -55,6 +54,7 @@ export default function ListComponent() {
               <FontAwesome6 name="trash-can" size={24} color="red" />
             </Pressable>
           ),
+          animation: 'default',
         }}
       />
       <ScrollView>
@@ -62,24 +62,28 @@ export default function ListComponent() {
         {taskList.map((item: TaskItemType) => (
           <TaskItem key={item.id} item={item} listId={listItem} arrayType="completed" />
         ))}
-        <Pressable
-          onPress={() => setCompletedTasksVisibility(!completedTasksVisibility)}
-          className="h-20 flex-row items-center rounded-lg px-3">
-          <MaterialCommunityIcons
-            name={completedTasksVisibility ? 'chevron-down' : 'chevron-right'}
-            size={35}
-            color="white"
-          />
-          <Text className="text-2xl text-white">Completed</Text>
-        </Pressable>
-        {/* Render completed tasks when visible */}
-        {completedTasksVisibility
-          ? completedTaskList.map((item: TaskItemType) => (
-              <TaskItem key={item.id} item={item} listId={listItem} arrayType="uncompleted" />
-            ))
-          : null}
+        {completedTaskList.length > 0 ? (
+          <Animated.View entering={FadeIn.duration(500)} exiting={FadeOut.duration(500)}>
+            <Pressable
+              onPress={() => setCompletedTasksVisibility(!completedTasksVisibility)}
+              className="h-20 flex-row items-center rounded-lg px-3">
+              <MaterialCommunityIcons
+                name={completedTasksVisibility ? 'chevron-down' : 'chevron-right'}
+                size={35}
+                color="white"
+              />
+              <Text className="text-2xl text-white">Completed</Text>
+            </Pressable>
+
+            {completedTasksVisibility
+              ? completedTaskList.map((item: TaskItemType) => (
+                  <TaskItem key={item.id} item={item} listId={listItem} arrayType="uncompleted" />
+                ))
+              : null}
+          </Animated.View>
+        ) : null}
       </ScrollView>
-      <View className="h-14 flex-row items-center justify-between bg-white/10 px-3">
+      <View className="m-2 h-14 flex-row items-center justify-between rounded-2xl bg-white/10 px-2">
         <TextInput
           value={input}
           maxLength={250}

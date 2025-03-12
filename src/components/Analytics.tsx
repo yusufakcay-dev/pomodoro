@@ -55,8 +55,8 @@ function Analytics() {
 
   return (
     <ScrollView className="flex-1 bg-black">
-      <View className="items-center gap-y-10 py-10">
-        <View className="w-full flex-row justify-between px-10 ">
+      <View className="my-2 items-center gap-y-5">
+        <View className="w-full flex-row justify-between px-10">
           <View className="w-44 items-center">
             <Ionicons name="today-outline" size={35} color="white" />
             <Text className="mt-2 text-xl text-white">Today's pomo</Text>
@@ -98,9 +98,9 @@ function Analytics() {
           <Text className="mb-2 text-2xl font-bold text-white">Focus(h)</Text>
           <BarChart
             frontColor="white"
-            barWidth={20}
-            spacing={20}
             data={chartData}
+            spacing={25}
+            barWidth={15}
             showLine
             lineConfig={{
               color: 'white',

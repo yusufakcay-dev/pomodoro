@@ -177,7 +177,10 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
           tasks: [...(list.tasks || []), movedTask!],
         };
       });
-      return { taskListsGroups: newTaskListsGroups };
+      return {
+        taskListsGroups: newTaskListsGroups,
+        totalTaskDone: state.totalTaskDone - (movedTask ? 1 : 0),
+      };
     }),
 
   // Enable edit mode for a task by setting its editing flag and storing its text in editInput

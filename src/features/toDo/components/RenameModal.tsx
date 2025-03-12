@@ -27,6 +27,8 @@ function RenameModal({
       visible={modalVisible}
       onRequestClose={() => {
         setModalVisible(!modalVisible);
+        setRenderItems(true);
+        setRenameInput('');
       }}
       style={{ zIndex: 999 }}>
       <Pressable

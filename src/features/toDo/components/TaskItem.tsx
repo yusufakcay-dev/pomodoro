@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Dimensions, Pressable, Text, TextInput } from 'react-native';
+import { Dimensions, Pressable, Text, TextInput, View } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { TaskItemType, useTasksStore } from '../stores/TasksStore';
 
@@ -30,39 +30,41 @@ function TaskItem({ item, arrayType, listId }: Props) {
           ? deleteItem(listId, item.id)
           : deleteItemFromCompleted(listId, item.id)
       }>
-      <Pressable
-        onLongPress={() => editItem(listId, item.id)}
-        className="my-0.5 h-20 flex-row items-center gap-x-2 px-3"
-        onPress={() => {
-          if (arrayType === 'completed') {
-            moveToCompleted(listId, item.id);
-            deleteItem(listId, item.id);
-          } else {
-            moveToList(listId, item.id);
-            deleteItemFromCompleted(listId, item.id);
-          }
-        }}>
-        <MaterialCommunityIcons
-          name={
-            arrayType === 'completed' ? 'checkbox-blank-circle-outline' : 'check-circle-outline'
-          }
-          size={35}
-          color="#E0E0E0"
-        />
-        {item.editing ? (
-          <TextInput
-            className="flex-1 rounded-md bg-gray-700 p-1 text-2xl text-white"
-            value={editInput}
-            onChangeText={(text) => {
-              setEditInput(text);
-            }}
-            onBlur={() => finistEditingItem(listId, item.id)}
-            autoFocus
+      <Animated.View entering={FadeIn.duration(500)}>
+        <Pressable
+          onLongPress={() => editItem(listId, item.id)}
+          className="my-0.5 h-20 flex-row items-center gap-x-2 px-3"
+          onPress={() => {
+            if (arrayType === 'completed') {
+              moveToCompleted(listId, item.id);
+              deleteItem(listId, item.id);
+            } else {
+              moveToList(listId, item.id);
+              deleteItemFromCompleted(listId, item.id);
+            }
+          }}>
+          <MaterialCommunityIcons
+            name={
+              arrayType === 'completed' ? 'checkbox-blank-circle-outline' : 'check-circle-outline'
+            }
+            size={35}
+            color="#E0E0E0"
           />
-        ) : (
-          <Text className="text-2xl text-[#E0E0E0]">{item.text}</Text>
-        )}
-      </Pressable>
+          {item.editing ? (
+            <TextInput
+              className="flex-1 rounded-md bg-gray-700 p-1 text-2xl text-white"
+              value={editInput}
+              onChangeText={(text) => {
+                setEditInput(text);
+              }}
+              onBlur={() => finistEditingItem(listId, item.id)}
+              autoFocus
+            />
+          ) : (
+            <Text className="text-2xl text-[#E0E0E0]">{item.text}</Text>
+          )}
+        </Pressable>
+      </Animated.View>
     </Swipeable>
   );
 }

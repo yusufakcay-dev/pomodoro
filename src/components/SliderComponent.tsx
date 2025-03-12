@@ -13,10 +13,7 @@ function SliderComponent({ header, maxValue, sliderValue, setSliderValue }: Prop
   const [localSliderValue, setlocalSliderValue] = useState(sliderValue);
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(500)}
-      exiting={FadeOut.duration(500)}
-      className="mx-0.5">
+    <Animated.View entering={FadeIn.duration(500)} className="mx-0.5">
       <Text className="text-2xl text-white">{header}</Text>
       <View className="flex-row justify-between">
         <Slider
