@@ -54,8 +54,8 @@ function Analytics() {
   });
 
   return (
-    <ScrollView className="flex-1 bg-black">
-      <View className="my-2 items-center gap-y-5">
+    <View className="flex-1 justify-between bg-black">
+      <View className="my-10 flex-1 items-center justify-between">
         <View className="w-full flex-row justify-between px-10">
           <View className="w-44 items-center">
             <Ionicons name="today-outline" size={35} color="white" />
@@ -94,44 +94,35 @@ function Analytics() {
             <Text className="mt-2 text-2xl font-bold text-white">{formatTime(totalBreakTime)}</Text>
           </View>
         </View>
-        <View className="">
-          <Text className="mb-2 text-2xl font-bold text-white">Focus(h)</Text>
-          <BarChart
-            frontColor="white"
-            data={chartData}
-            spacing={25}
-            barWidth={15}
-            showLine
-            lineConfig={{
-              color: 'white',
-              thickness: 0.5,
-              curved: true,
-              hideDataPoints: true,
-              shiftY: 30,
-            }}
-            roundedTop
-            roundedBottom
-            yAxisTextStyle={{ color: 'white' }}
-            xAxisLabelTextStyle={{ color: 'white' }}
-            isAnimated
-            noOfSections={5} // Adjust y-axis sections as needed
-            yAxisThickness={0} // Hides the y-axis line
-            xAxisThickness={0} // Hides the x-axis line
-            color="white" // Contrast color for the bars
-            renderTooltip={(item: BarChartItem) => (
-              <View
-                style={{
-                  paddingHorizontal: 0,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                }}>
-                <Text className="text-xl text-white">{item.value}</Text>
-              </View>
-            )}
-          />
-        </View>
       </View>
-    </ScrollView>
+      <View className="mb-5 self-center">
+        <BarChart
+          frontColor="white"
+          data={chartData}
+          spacing={25}
+          barWidth={15}
+          roundedTop
+          roundedBottom
+          yAxisTextStyle={{ color: 'white' }}
+          xAxisLabelTextStyle={{ color: 'white' }}
+          isAnimated
+          noOfSections={4} // Adjust y-axis sections as needed
+          yAxisThickness={0} // Hides the y-axis line
+          xAxisThickness={0} // Hides the x-axis line
+          color="white" // Contrast color for the bars
+          renderTooltip={(item: BarChartItem) => (
+            <View
+              style={{
+                paddingHorizontal: 0,
+                paddingVertical: 4,
+                borderRadius: 4,
+              }}>
+              <Text className="text-xl text-white">{item.value}</Text>
+            </View>
+          )}
+        />
+      </View>
+    </View>
   );
 }
 
