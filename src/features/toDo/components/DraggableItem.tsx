@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Link, RelativePathString } from 'expo-router';
 import { Text, StyleSheet, View, Pressable } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -39,7 +38,7 @@ interface Props {
   setAddRemoveListsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const swap = (array: string[], from: number, to: number) => {
+export const swap = (array: string[], from: number, to: number) => {
   'worklet';
   const newArray = [...array];
   newArray.splice(to, 0, newArray.splice(from, 1)[0]);

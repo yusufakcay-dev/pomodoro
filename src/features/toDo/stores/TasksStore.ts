@@ -30,6 +30,8 @@ interface TasksStoreType {
   moveListOutOfGroup: (listId: string) => void;
   deleteListGroup: (id: string) => void;
   setTaskListsGroups: (newOrder: TaskListsGroupsType[]) => void;
+  // Updated signature: we include listId to know which list's tasks to replace
+  setNewTasks: (listId: string, newTasks: TaskItemType[]) => void;
   renameItem: (id: string, newName: string) => void;
   // Task functions for a specific list
   deleteItem: (listId: string, taskId: string) => void;
@@ -50,10 +52,23 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
   totalTaskDone: 0,
 
   // List/Group functions
-  addList: (list) => set((state) => ({ taskListsGroups: [...state.taskListsGroups, list] })),
+  addList: (list) =>
+    set((state) => ({
+      taskListsGroups: [...state.taskListsGroups, list],
+    })),
   setInput: (newInput) => set({ input: newInput }),
   setEditInput: (newInput) => set({ editInput: newInput }),
   setTaskListsGroups: (newOrder) => set({ taskListsGroups: newOrder }),
+
+  // New function: Replaces the tasks array for a specific list
+  setNewTasks: (listId, newTasks) =>
+    set((state) => ({
+      taskListsGroups: updateListInGroups(state.taskListsGroups, listId, (list) => ({
+        ...list,
+        tasks: newTasks,
+      })),
+    })),
+
   deleteListGroup: (id) =>
     set((state) => ({
       taskListsGroups: removeListOrGroup(state.taskListsGroups, id),
@@ -64,18 +79,18 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       let updatedTaskLists = state.taskListsGroups.filter((list) => {
         if (list.id === listId) {
           listToMove = list;
-          return false; // Remove the list from top-level
+          return false;
         }
         return true;
       });
 
-      if (!listToMove) return state; // If list not found, do nothing
+      if (!listToMove) return state;
 
       updatedTaskLists = updatedTaskLists.map((group) => {
         if (group.id === groupId && group.type === 'group') {
           return {
             ...group,
-            groups: [...(group.groups || []), listToMove!], // Add list to group
+            groups: [...(group.groups || []), listToMove!],
           };
         }
         return group;
@@ -93,7 +108,7 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
           const filteredGroups = group.groups.filter((list) => {
             if (list.id === listId) {
               listToMove = list;
-              return false; // Remove from group
+              return false;
             }
             return true;
           });
@@ -102,7 +117,7 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
         return group;
       });
       if (listToMove) {
-        updatedTaskLists.push(listToMove); // Move list to top level
+        updatedTaskLists.push(listToMove);
       }
       return { taskListsGroups: updatedTaskLists };
     });
@@ -115,9 +130,8 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       ),
     })),
 
-  // Task functions operating on a specific list
+  // Task functions for a specific list
 
-  // Remove an active task from a list's tasks array
   deleteItem: (listId, taskId) =>
     set((state) => ({
       taskListsGroups: updateListInGroups(state.taskListsGroups, listId, (list) => ({
@@ -126,7 +140,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       })),
     })),
 
-  // Remove a completed task from a list's completedTasks array
   deleteItemFromCompleted: (listId, taskId) =>
     set((state) => ({
       taskListsGroups: updateListInGroups(state.taskListsGroups, listId, (list) => ({
@@ -135,7 +148,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       })),
     })),
 
-  // Move an active task to completedTasks within the same list
   moveToCompleted: (listId, taskId) =>
     set((state) => {
       let movedTask: TaskItemType | undefined;
@@ -159,7 +171,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       };
     }),
 
-  // Move a task from completedTasks back to active tasks within the same list
   moveToList: (listId, taskId) =>
     set((state) => {
       let movedTask: TaskItemType | undefined;
@@ -183,7 +194,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       };
     }),
 
-  // Enable edit mode for a task by setting its editing flag and storing its text in editInput
   editItem: (listId, taskId) =>
     set((state) => {
       let editText = '';
@@ -200,7 +210,6 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       return { taskListsGroups: newTaskListsGroups, editMode: true, editInput: editText };
     }),
 
-  // Finalize editing: update the task text with the current editInput and disable editing mode
   finistEditingItem: (listId, taskId) =>
     set((state) => ({
       taskListsGroups: updateListInGroups(state.taskListsGroups, listId, (list) => {
@@ -212,6 +221,7 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
       editMode: false,
       editInput: '',
     })),
+
   addItem: (listId) =>
     set((state) => ({
       taskListsGroups: updateListInGroups(state.taskListsGroups, listId, (list) => ({
@@ -244,20 +254,14 @@ function removeListOrGroup(lists: TaskListsGroupsType[], id: string): TaskListsG
   const result: TaskListsGroupsType[] = [];
   for (const item of lists) {
     if (item.id === id) {
-      // If the target is found:
-      // If it's a group with children, promote its children to top-level.
       if (item.type === 'group' && item.groups && item.groups.length > 0) {
         result.push(...item.groups);
       }
-      // Otherwise, if it's a list or an empty group, do nothing (i.e. delete it).
     } else {
       if (item.type === 'group') {
-        // Recursively process the group's children.
         const updatedChildren = item.groups ? removeListOrGroup(item.groups, id) : [];
-        // Always keep the group even if its children array is empty.
         result.push({ ...item, groups: updatedChildren });
       } else {
-        // For list items, simply keep them.
         result.push(item);
       }
     }
