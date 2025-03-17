@@ -29,7 +29,7 @@ function findListInGroups(lists: TaskListsGroupsType[], listId: string): TaskLis
 
 export default function ListComponent() {
   const { listItem } = useLocalSearchParams<{ listItem: string }>();
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState(false);
   const { taskListsGroups, addItem, input, setInput, setNewTasks } = useTasksStore();
 
@@ -72,31 +72,34 @@ export default function ListComponent() {
               onPress={() => {
                 // deleteListGroup(listItem);
                 // router.back();
-                setOpenDropdown(listItem);
+                setOpenDropdown(!openDropdown);
               }}>
-              <FontAwesome6 name="trash-can" size={24} color="red" />
+              <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
             </Pressable>
+          ),
+          headerTitle: () => (
+            <Text className="text-2xl font-semibold text-white">{currentList.name}</Text>
           ),
           animation: 'default',
         }}
       />
-      {openDropdown === listItem ? (
+      {openDropdown ? (
         <View className="absolute right-0 top-0 z-50 min-w-[150px] max-w-xs rounded-lg bg-white p-2 shadow-lg">
           <Pressable
             onPress={() => {
-              setOpenDropdown(null);
+              setOpenDropdown(false);
             }}>
             <Text className="py-2 text-lg text-black">Add/Remove lists</Text>
           </Pressable>
           <Pressable
             onPress={() => {
-              setOpenDropdown(null);
+              setOpenDropdown(false);
             }}>
             <Text className="py-2 text-lg text-black">Rename group</Text>
           </Pressable>
           <Pressable
             onPress={() => {
-              setOpenDropdown(null);
+              setOpenDropdown(false);
             }}>
             <Text className="py-2 text-lg text-black">Delete</Text>
           </Pressable>
