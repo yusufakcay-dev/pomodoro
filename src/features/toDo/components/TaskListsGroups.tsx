@@ -124,7 +124,7 @@ function TaskListsGroups() {
             setNewItemModalVisible(!newItemModalVisible);
             setRenderItems(false);
           }}>
-          <MaterialCommunityIcons name="plus" size={35} color="white" />
+          <MaterialCommunityIcons name="playlist-plus" size={35} color="white" />
           <Text className="text-2xl text-white">New List</Text>
         </Pressable>
         <Pressable
@@ -135,7 +135,7 @@ function TaskListsGroups() {
             setRenderItems(false);
           }}>
           <Text className="text-2xl text-white">New Group</Text>
-          <MaterialCommunityIcons name="playlist-plus" size={35} color="white" />
+          <MaterialCommunityIcons name="plus" size={35} color="white" />
         </Pressable>
       </View>
     </View>

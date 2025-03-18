@@ -175,11 +175,6 @@ export const DraggableItem = ({
               {/* Group Header */}
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-x-2">
-                  {expandedGroups[item.id] ? null : (
-                    <Animated.View entering={FadeIn.duration(500)}>
-                      <MaterialIcons name="format-list-bulleted" size={30} color="white" />
-                    </Animated.View>
-                  )}
                   <Text className="text-2xl text-white">{item.name}</Text>
                 </View>
                 <View className="relative flex-row">
