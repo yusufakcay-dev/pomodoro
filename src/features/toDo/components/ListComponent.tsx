@@ -15,7 +15,10 @@ import Animated, {
 import DraggableTaskItem from './DraggableTaskItem';
 
 // Recursive helper to search for a list by id within groups
-function findListInGroups(lists: TaskListsGroupsType[], listId: string): TaskListsGroupsType {
+function findListInGroups(
+  lists: TaskListsGroupsType[],
+  listId: string
+): TaskListsGroupsType | null {
   for (const item of lists) {
     if (item.type === 'list' && item.id === listId) {
       return item;
@@ -24,21 +27,22 @@ function findListInGroups(lists: TaskListsGroupsType[], listId: string): TaskLis
       if (found) return found;
     }
   }
-  throw new Error(`List with id ${listId} not found`);
+  return null; // Return null instead of throwing an error.
 }
 
 export default function ListComponent() {
   const { listItem } = useLocalSearchParams<{ listItem: string }>();
   const [openDropdown, setOpenDropdown] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState(false);
-  const { taskListsGroups, addItem, input, setInput, setNewTasks } = useTasksStore();
-
+  const { taskListsGroups, addItem, input, setInput, setNewTasks, deleteListGroup } =
+    useTasksStore();
+  const router = useRouter();
   // Use the recursive helper to find the current list even if it is nested within groups.
   const currentList = findListInGroups(taskListsGroups, listItem);
-
-  // Fallback to empty arrays if the list is not found.
-  const taskList = currentList.tasks || [];
-  const completedTaskList = currentList.completedTasks || [];
+  console.log(currentList);
+  // Fallback to empty arrays if the list is not found.433
+  const taskList = currentList?.tasks || [];
+  const completedTaskList = currentList?.completedTasks || [];
 
   const order = useSharedValue(taskList.map((item) => item.id));
 
@@ -70,15 +74,13 @@ export default function ListComponent() {
           headerRight: () => (
             <Pressable
               onPress={() => {
-                // deleteListGroup(listItem);
-                // router.back();
                 setOpenDropdown(!openDropdown);
               }}>
               <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
             </Pressable>
           ),
           headerTitle: () => (
-            <Text className="text-2xl font-semibold text-white">{currentList.name}</Text>
+            <Text className="text-2xl font-semibold text-white">{currentList?.name}</Text>
           ),
           animation: 'default',
         }}
@@ -99,7 +101,9 @@ export default function ListComponent() {
           </Pressable>
           <Pressable
             onPress={() => {
+              router.back();
               setOpenDropdown(false);
+              deleteListGroup(listItem);
             }}>
             <Text className="py-2 text-lg text-black">Delete</Text>
           </Pressable>
