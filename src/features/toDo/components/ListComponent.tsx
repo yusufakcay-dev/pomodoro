@@ -39,7 +39,6 @@ export default function ListComponent() {
   const router = useRouter();
   // Use the recursive helper to find the current list even if it is nested within groups.
   const currentList = findListInGroups(taskListsGroups, listItem);
-  console.log(currentList);
   // Fallback to empty arrays if the list is not found.433
   const taskList = currentList?.tasks || [];
   const completedTaskList = currentList?.completedTasks || [];
