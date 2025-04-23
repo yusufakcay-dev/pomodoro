@@ -34,11 +34,23 @@ export default function ListComponent() {
   const { listItem } = useLocalSearchParams<{ listItem: string }>();
   const [openDropdown, setOpenDropdown] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState(false);
-  const { taskListsGroups, addItem, input, setInput, setNewTasks, deleteListGroup } =
-    useTasksStore();
+  const [editListName, setEditListName] = useState(false);
+
+  const {
+    taskListsGroups,
+    addItem,
+    input,
+    setInput,
+    setNewTasks,
+    deleteListGroup,
+    renameListOrGroupName,
+  } = useTasksStore();
+
   const router = useRouter();
   // Use the recursive helper to find the current list even if it is nested within groups.
   const currentList = findListInGroups(taskListsGroups, listItem);
+  const [renameInput, setRenameInput] = useState(currentList?.name);
+
   // Fallback to empty arrays if the list is not found.433
   const taskList = currentList?.tasks || [];
   const completedTaskList = currentList?.completedTasks || [];
@@ -78,9 +90,28 @@ export default function ListComponent() {
               <MaterialCommunityIcons name="dots-vertical" size={35} color="white" />
             </Pressable>
           ),
-          headerTitle: () => (
-            <Text className="text-2xl font-semibold text-white">{currentList?.name}</Text>
-          ),
+          headerTitle: () =>
+            editListName ? (
+              <TextInput
+                value={renameInput}
+                maxLength={250}
+                onChangeText={(text) => setRenameInput(text)}
+                className="text-2xl font-semibold text-white"
+                onSubmitEditing={() => {
+                  if (!renameInput) return;
+                  renameListOrGroupName(listItem, renameInput);
+                  setEditListName(false);
+                }}
+                onBlur={() => {
+                  if (!renameInput) return;
+                  renameListOrGroupName(listItem, renameInput);
+                  setEditListName(false);
+                }}
+                autoFocus
+              />
+            ) : (
+              <Text className="text-2xl font-semibold text-white">{currentList?.name}</Text>
+            ),
           animation: 'default',
         }}
       />
@@ -89,12 +120,7 @@ export default function ListComponent() {
           <Pressable
             onPress={() => {
               setOpenDropdown(false);
-            }}>
-            <Text className="py-2 text-lg text-black">Add/Remove lists</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              setOpenDropdown(false);
+              setEditListName(!editListName);
             }}>
             <Text className="py-2 text-lg text-black">Rename group</Text>
           </Pressable>

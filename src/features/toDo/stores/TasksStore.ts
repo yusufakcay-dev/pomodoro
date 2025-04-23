@@ -41,6 +41,7 @@ interface TasksStoreType {
   editItem: (listId: string, taskId: string) => void;
   finistEditingItem: (listId: string, taskId: string) => void;
   addItem: (listId: string) => void;
+  renameListOrGroupName: (id: string, newName: string) => void;
 }
 
 export const useTasksStore = create<TasksStoreType>((set, get) => ({
@@ -67,6 +68,11 @@ export const useTasksStore = create<TasksStoreType>((set, get) => ({
         ...list,
         tasks: newTasks,
       })),
+    })),
+
+  renameListOrGroupName: (id, newName) =>
+    set((state) => ({
+      taskListsGroups: updateListOrGroupName(state.taskListsGroups, id, newName),
     })),
 
   deleteListGroup: (id) =>
@@ -267,4 +273,22 @@ function removeListOrGroup(lists: TaskListsGroupsType[], id: string): TaskListsG
     }
   }
   return result;
+}
+
+function updateListOrGroupName(
+  lists: TaskListsGroupsType[],
+  id: string,
+  newName: string
+): TaskListsGroupsType[] {
+  return lists.map((item) => {
+    if (item.id === id) {
+      return { ...item, name: newName };
+    } else if (item.type === 'group' && item.groups) {
+      return {
+        ...item,
+        groups: updateListOrGroupName(item.groups, id, newName),
+      };
+    }
+    return item;
+  });
 }

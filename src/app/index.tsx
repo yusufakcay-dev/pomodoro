@@ -62,14 +62,19 @@ export default function Home() {
         </View>
         <View className="mx-16 my-5 flex-row items-center justify-between">
           <Link className="text-white" href="/list">
-            <Ionicons name="list-sharp" size={35} color="white" />
-          </Link>
-
-          <Link className="text-white" href="/settings">
-            <Ionicons name="settings-sharp" size={35} color="white" />
+            <View>
+              <Ionicons name="list-sharp" size={35} color="white" />
+            </View>
           </Link>
           <Link className="text-white" href="/statistics">
-            <MaterialCommunityIcons name="google-analytics" size={35} color="white" />
+            <View>
+              <MaterialCommunityIcons name="google-analytics" size={35} color="white" />
+            </View>
+          </Link>
+          <Link className="text-white" href="/settings">
+            <View>
+              <Ionicons name="settings-sharp" size={35} color="white" />
+            </View>
           </Link>
         </View>
       </Animated.View>

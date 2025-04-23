@@ -14,6 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { TaskListsGroupsType } from '../stores/TasksStore';
+import { useState } from 'react';
 
 export const ITEM_HEIGHT = 60;
 
@@ -72,7 +73,7 @@ export const DraggableItem = ({
       const precedingId = order.value[i];
       const precedingItem = itemsMap[precedingId];
       if (precedingItem && precedingItem.groups && expandedGroups[precedingId]) {
-        if (precedingItem.groups.length < 2) {
+        if (precedingItem.groups.length === 0) {
           extraOffset += 120;
         } else extraOffset += precedingItem.groups.length * ITEM_HEIGHT;
       }
@@ -151,9 +152,8 @@ export const DraggableItem = ({
       zIndex: isDragging.value ? 1 : 0,
     };
   });
-
   return (
-    <PanGestureHandler onGestureEvent={gestureHandler}>
+    <PanGestureHandler onGestureEvent={gestureHandler} activateAfterLongPress={100}>
       <Animated.View style={[styles.item, animatedStyle]}>
         <View>
           {item.type === 'list' ? (
@@ -261,8 +261,8 @@ export const DraggableItem = ({
                     ))
                   ) : (
                     // Empty Group Message
-                    <Text className="mt-2 text-2xl italic text-gray-400">
-                      Drag or click to add item
+                    <Text className="mt-2 h-[60px] align-middle text-2xl italic text-gray-400">
+                      Click to add item
                     </Text>
                   )}
                 </Animated.View>
