@@ -2,7 +2,7 @@
 
 A modern, minimalist productivity app built with **Expo + React Native**, following the Pomodoro Technique. Manage your time and tasks efficiently with grouped to-do lists, a customizable Pomodoro timer, and statistics.
 
-![](https://imgur.com/ajb3AdO)
+![](https://i.imgur.com/ajb3AdO.png)
 
 ---
 
