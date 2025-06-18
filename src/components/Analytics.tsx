@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 
 import { useTasksStore } from '../features/toDo/stores/TasksStore';
