@@ -34,4 +34,4 @@ A modern, minimalist productivity app built with **Expo + React Native**, follow
 | `expo-router`                                 | File-based navigation              |
 | `zustand`                                     | Lightweight state management       |
 | `nativewind`                                  | Tailwind CSS for React Native      |
-| `react-native-reanimated` + `gesture-handler` | Drag & drop and animation support  |
+| `react-native-reanimated` + `gesture-handler` | Drag & animation support  |
