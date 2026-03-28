@@ -35,3 +35,4 @@ A modern, minimalist productivity app built with **Expo + React Native**, follow
 | `zustand`                                     | Lightweight state management       |
 | `nativewind`                                  | Tailwind CSS for React Native      |
 | `react-native-reanimated` + `gesture-handler` | Drag & animation support  |
+
